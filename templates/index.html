@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell">
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>フォルミル</h1>
+      <p class="hero-text">
+        ブラウザで選択したフォルダを読み取り専用で解析し、容量の偏り、拡張子の分布、大きいファイルの所在をその場でダッシュボード表示します。
+      </p>
+    </div>
+
+    <form id="analyze-form" class="analyze-form">
+      <label for="folder-input">解析フォルダ</label>
+      <div class="form-row">
+        <input id="folder-input" name="folder_input" type="file" webkitdirectory directory multiple required>
+        <button id="analyze-button" type="submit">選択フォルダを解析</button>
+      </div>
+      <p class="form-hint">解析はブラウザ内で完結します。サーバへファイル内容は送らず、削除や移動も行いません。</p>
+      <div id="form-message" class="message" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section id="dashboard" class="dashboard hidden">
+    <div class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">総容量</span>
+        <strong id="summary-size">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">総ファイル数</span>
+        <strong id="summary-files">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">総フォルダ数</span>
+        <strong id="summary-dirs">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">選択フォルダ</span>
+        <strong id="summary-root" class="path-value">-</strong>
+      </article>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>フォルダ構造</h2>
+        </div>
+        <div class="segmented-control" role="group" aria-label="Chart mode">
+          <button type="button" class="mode-button active" data-chart-mode="treemap">Treemap</button>
+          <button type="button" class="mode-button" data-chart-mode="sunburst">Sunburst</button>
+        </div>
+      </div>
+      <div id="tree-chart" class="chart"></div>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>拡張子別の容量</h2>
+          </div>
+        </div>
+        <div id="extension-chart" class="chart chart-compact"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>大きいフォルダ</h2>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>フォルダ</th>
+                <th>サイズ</th>
+                <th>ファイル数</th>
+              </tr>
+            </thead>
+            <tbody id="largest-dirs-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>大きいファイル上位</h2>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>ファイル</th>
+              <th>拡張子</th>
+              <th>サイズ</th>
+              <th>更新日時</th>
+            </tr>
+          </thead>
+          <tbody id="largest-files-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <h2>ファイル一覧</h2>
+        </div>
+        <div class="filters">
+          <label>
+            <span>拡張子</span>
+            <select id="extension-filter"></select>
+          </label>
+          <label>
+            <span>最小サイズ(MB)</span>
+            <input id="min-size-filter" type="number" min="0" step="1" value="0">
+          </label>
+          <label class="filter-search">
+            <span>ファイル名検索</span>
+            <input id="search-filter" type="search" placeholder="example.log">
+          </label>
+        </div>
+      </div>
+      <div class="table-meta">
+        <span id="filtered-stats">-</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>ファイル名</th>
+              <th>拡張子</th>
+              <th>サイズ</th>
+              <th>更新日時</th>
+              <th>親フォルダ</th>
+            </tr>
+          </thead>
+          <tbody id="files-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>ブラウザ側の制約</h2>
+        </div>
+      </div>
+      <ul id="error-list" class="error-list"></ul>
+    </section>
+  </section>
+</main>
+{% endblock %}
