@@ -6,9 +6,9 @@
 <main class="page-shell">
   <section class="hero">
     <div class="hero-copy">
-      <h1>フォルミル</h1>
+      <h1>Folder Visualizer</h1>
       <p class="hero-text">
-        ブラウザで選択したフォルダを読み取り専用で解析し、容量の偏り、拡張子の分布、大きいファイルの所在をその場でダッシュボード表示します。
+        選択したフォルダを解析し、容量の偏り、拡張子の分布、大きいファイルをダッシュボード表示します。
       </p>
     </div>
 
@@ -18,7 +18,6 @@
         <input id="folder-input" name="folder_input" type="file" webkitdirectory directory multiple required>
         <button id="analyze-button" type="submit">選択フォルダを解析</button>
       </div>
-      <p class="form-hint">解析はブラウザ内で完結します。サーバへファイル内容は送らず、削除や移動も行いません。</p>
       <div id="form-message" class="message" role="status" aria-live="polite"></div>
     </form>
   </section>
