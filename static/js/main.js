@@ -1,6 +1,8 @@
 const state = {
   analysis: null,
   chartMode: "treemap",
+  isBusy: false,
+  plotlyPromise: null,
 };
 
 const form = document.getElementById("analyze-form");
@@ -10,15 +12,28 @@ const dashboard = document.getElementById("dashboard");
 const extensionFilter = document.getElementById("extension-filter");
 const minSizeFilter = document.getElementById("min-size-filter");
 const searchFilter = document.getElementById("search-filter");
+const progressPanel = document.getElementById("progress-panel");
+const progressBar = document.getElementById("progress-bar");
+const progressTitle = document.getElementById("progress-title");
+const progressDescription = document.getElementById("progress-description");
+const progressPercentage = document.getElementById("progress-percentage");
+const progressFill = document.getElementById("progress-fill");
+const progressCount = document.getElementById("progress-count");
+const progressStage = document.getElementById("progress-stage");
 
 document.querySelectorAll("[data-chart-mode]").forEach((button) => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", async () => {
+    if (state.isBusy) {
+      return;
+    }
+
     state.chartMode = button.dataset.chartMode;
     document.querySelectorAll("[data-chart-mode]").forEach((item) => {
       item.classList.toggle("active", item === button);
     });
+
     if (state.analysis) {
-      renderTreeChart(state.analysis.tree);
+      await renderTreeChart(state.analysis.tree);
     }
   });
 });
@@ -34,29 +49,63 @@ document.querySelectorAll("[data-chart-mode]").forEach((button) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (state.isBusy) {
+    return;
+  }
+
   const selectedFiles = [...folderInput.files];
   if (!selectedFiles.length) {
     setMessage("解析したいフォルダを選択してください。", "error");
     return;
   }
 
-  setMessage("解析を実行しています。ファイル数が多い場合は時間がかかります。", "success");
+  setMessage("フォルダの解析を開始しました。", "success");
   toggleBusy(true);
+  updateProgress({
+    percent: 0,
+    title: "フォルダ読み込み中...",
+    description: "ファイル情報の収集を開始しています。",
+    countLabel: `0 / ${formatNumber(selectedFiles.length)} files processed`,
+    stageLabel: "準備中",
+    visible: true,
+  });
 
   try {
-    const payload = await analyzeFiles(selectedFiles);
+    const payload = await analyzeFiles(selectedFiles, updateProgress);
     state.analysis = payload;
-    hydrateDashboard(payload);
-    setMessage("解析が完了しました。", "success");
+    await hydrateDashboard(payload);
+    updateProgress({
+      percent: 100,
+      title: "完了",
+      description: "解析結果の表示が完了しました。",
+      countLabel: `${formatNumber(payload.summary.total_files)} / ${formatNumber(payload.summary.total_files)} files processed`,
+      stageLabel: "完了",
+      visible: true,
+    });
+    setMessage("フォルダの解析が完了しました。", "success");
   } catch (error) {
-    setMessage(error.message, "error");
+    const message = error instanceof Error ? error.message : "不明なエラーが発生しました。";
     dashboard.classList.add("hidden");
+    updateProgress({
+      percent: 0,
+      title: "エラー",
+      description: message,
+      countLabel: "0 / 0 files processed",
+      stageLabel: "エラー",
+      visible: true,
+    });
+    setMessage(message, "error");
   } finally {
     toggleBusy(false);
+    window.setTimeout(() => {
+      if (!state.isBusy && state.analysis) {
+        progressPanel.classList.add("hidden");
+      }
+    }, 900);
   }
 });
 
-function hydrateDashboard(data) {
+async function hydrateDashboard(data) {
   dashboard.classList.remove("hidden");
 
   document.getElementById("summary-size").textContent = formatBytes(data.summary.total_size);
@@ -65,8 +114,25 @@ function hydrateDashboard(data) {
   document.getElementById("summary-root").textContent = data.summary.root_path;
 
   populateExtensionFilter(data.extensions);
-  renderTreeChart(data.tree);
+  updateProgress({
+    percent: 82,
+    title: "可視化準備中...",
+    description: "グラフライブラリを読み込み、表示データを組み立てています。",
+    countLabel: `${formatNumber(data.summary.total_files)} / ${formatNumber(data.summary.total_files)} files processed`,
+    stageLabel: "可視化準備",
+  });
+  await loadPlotly();
+  updateProgress({
+    percent: 90,
+    title: "グラフを生成中...",
+    description: "ツリーと拡張子グラフを描画しています。",
+    countLabel: `${formatNumber(data.summary.total_files)} / ${formatNumber(data.summary.total_files)} files processed`,
+    stageLabel: "描画中",
+  });
+  await renderTreeChart(data.tree);
+  await yieldToBrowser();
   renderExtensionChart(data.extensions);
+  await yieldToBrowser();
   renderLargestFiles(data.largest_files);
   renderLargestDirs(data.largest_dirs);
   renderFilesSection();
@@ -85,7 +151,8 @@ function populateExtensionFilter(extensions) {
   }
 }
 
-function renderTreeChart(tree) {
+async function renderTreeChart(tree) {
+  await loadPlotly();
   const flattened = flattenTree(tree);
   const trace = {
     type: state.chartMode,
@@ -107,7 +174,7 @@ function renderTreeChart(tree) {
     pathbar: { visible: state.chartMode === "sunburst" },
   };
 
-  Plotly.react("tree-chart", [trace], {
+  window.Plotly.react("tree-chart", [trace], {
     margin: { t: 10, r: 10, b: 10, l: 10 },
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor: "rgba(0,0,0,0)",
@@ -117,7 +184,7 @@ function renderTreeChart(tree) {
 
 function renderExtensionChart(extensions) {
   const top = extensions.slice(0, 12);
-  Plotly.react("extension-chart", [{
+  window.Plotly.react("extension-chart", [{
     type: "bar",
     x: top.map((item) => item.extension),
     y: top.map((item) => item.size),
@@ -230,38 +297,67 @@ function flattenTree(tree) {
   return { ids, labels, parents, values };
 }
 
-async function analyzeFiles(files) {
+async function analyzeFiles(files, onProgress) {
   await yieldToBrowser();
 
   const rootName = getRootName(files);
-  const fileRows = files.map((file) => {
+  const totalFiles = files.length;
+  const fileRows = [];
+
+  for (let index = 0; index < files.length; index += 1) {
+    const file = files[index];
     const relativePath = normalizeRelativePath(file.webkitRelativePath || file.name);
     const pathParts = relativePath.split("/").filter(Boolean);
     const name = pathParts[pathParts.length - 1] || file.name;
     const parent = pathParts.length > 1 ? pathParts.slice(0, -1).join("/") : rootName;
     const extension = getExtension(name);
 
-    return {
+    fileRows.push({
       path: relativePath,
       name,
       extension,
       size: file.size,
       modified_at: new Date(file.lastModified).toISOString(),
       parent,
-    };
-  });
+    });
+
+    if (shouldYield(index, totalFiles)) {
+      const processed = index + 1;
+      onProgress({
+        percent: scaleProgress(processed / totalFiles, 0, 42),
+        title: "ファイル情報を読み込み中...",
+        description: "選択したファイルのパス、サイズ、更新日時を収集しています。",
+        countLabel: `${formatNumber(processed)} / ${formatNumber(totalFiles)} files processed`,
+        stageLabel: "フォルダ読み込み",
+      });
+      await yieldToBrowser();
+    }
+  }
 
   const tree = createNode(rootName, rootName);
   const directoryMap = new Map([[rootName, tree]]);
   const extensionMap = new Map();
 
-  for (const file of fileRows) {
+  for (let index = 0; index < fileRows.length; index += 1) {
+    const file = fileRows[index];
     addFileToTree(tree, directoryMap, file);
 
     const bucket = extensionMap.get(file.extension) || { extension: file.extension, count: 0, size: 0 };
     bucket.count += 1;
     bucket.size += file.size;
     extensionMap.set(file.extension, bucket);
+
+    if (shouldYield(index, totalFiles)) {
+      const processed = index + 1;
+      onProgress({
+        percent: scaleProgress(processed / totalFiles, 42, 78),
+        title: "フォルダ構造を解析中...",
+        description: "ディレクトリツリーと拡張子ごとの集計を作成しています。",
+        countLabel: `${formatNumber(processed)} / ${formatNumber(totalFiles)} files processed`,
+        stageLabel: "解析中",
+      });
+      await yieldToBrowser();
+    }
   }
 
   finalizeNode(tree);
@@ -283,12 +379,20 @@ async function analyzeFiles(files) {
     .sort((left, right) => right.size - left.size)
     .slice(0, 15);
 
-   const notes = [
-    "選択されたフォルダ内のファイルをブラウザ上で解析しています。",
-    "そのため、サーバーにファイルがアップロードされることはありません。",
-    "また、ファイルの内容を読み取ることもありません。",
+  const notes = [
+    "選択したフォルダ内のファイル情報をブラウザ上だけで解析しています。",
+    "サーバー側にファイル内容そのものはアップロードされません。",
+    "ファイル数が多いほど、一覧生成とグラフ描画に時間がかかります。",
   ];
 
+  onProgress({
+    percent: 80,
+    title: "可視化準備中...",
+    description: "集計結果をテーブルとグラフ向けの形式に整えています。",
+    countLabel: `${formatNumber(totalFiles)} / ${formatNumber(totalFiles)} files processed`,
+    stageLabel: "可視化準備",
+  });
+  await yieldToBrowser();
 
   return {
     summary: {
@@ -376,9 +480,56 @@ function getExtension(name) {
 }
 
 function yieldToBrowser() {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, 0);
+  return new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
+}
+
+function shouldYield(index, total) {
+  if (total <= 40) {
+    return true;
+  }
+
+  return index === total - 1 || index % 50 === 49;
+}
+
+function scaleProgress(ratio, start, end) {
+  const safeRatio = Math.min(Math.max(ratio, 0), 1);
+  return Math.round(start + ((end - start) * safeRatio));
+}
+
+function updateProgress({ percent, title, description, countLabel, stageLabel, visible = true }) {
+  if (visible) {
+    progressPanel.classList.remove("hidden");
+  }
+
+  const safePercent = Math.min(Math.max(Math.round(percent), 0), 100);
+  progressTitle.textContent = title;
+  progressDescription.textContent = description;
+  progressPercentage.textContent = `${safePercent}%`;
+  progressFill.style.width = `${safePercent}%`;
+  progressCount.textContent = countLabel;
+  progressStage.textContent = stageLabel;
+  progressBar.setAttribute("aria-valuenow", String(safePercent));
+}
+
+function loadPlotly() {
+  if (window.Plotly) {
+    return Promise.resolve(window.Plotly);
+  }
+
+  if (state.plotlyPromise) {
+    return state.plotlyPromise;
+  }
+
+  state.plotlyPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "/plotly.js";
+    script.async = true;
+    script.onload = () => resolve(window.Plotly);
+    script.onerror = () => reject(new Error("グラフライブラリの読み込みに失敗しました。ページを再読み込みして再試行してください。"));
+    document.head.appendChild(script);
   });
+
+  return state.plotlyPromise;
 }
 
 function setMessage(text, tone) {
@@ -387,9 +538,16 @@ function setMessage(text, tone) {
 }
 
 function toggleBusy(isBusy) {
+  state.isBusy = isBusy;
   const button = document.getElementById("analyze-button");
+  const modeButtons = document.querySelectorAll(".mode-button");
+
   button.disabled = isBusy;
-  button.textContent = isBusy ? "解析中..." : "解析開始";
+  button.textContent = isBusy ? "解析中..." : "フォルダを解析";
+  folderInput.disabled = isBusy;
+  modeButtons.forEach((item) => {
+    item.disabled = isBusy;
+  });
 }
 
 function formatBytes(bytes) {

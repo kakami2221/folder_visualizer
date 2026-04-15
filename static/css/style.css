@@ -81,7 +81,9 @@ select {
 .form-hint,
 .message,
 .table-meta,
-.summary-label {
+.summary-label,
+.progress-description,
+.progress-meta {
   color: var(--muted);
 }
 
@@ -109,6 +111,57 @@ select {
 .form-row {
   display: flex;
   gap: 12px;
+}
+
+.progress-panel {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(91, 76, 63, 0.1);
+}
+
+.progress-header,
+.progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress-description {
+  margin: 6px 0 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.progress-percentage {
+  min-width: 52px;
+  font-weight: 700;
+  color: var(--accent-strong);
+  text-align: right;
+}
+
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+  height: 12px;
+  margin: 14px 0 10px;
+  border-radius: 999px;
+  background: rgba(36, 88, 82, 0.12);
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+  transition: width 180ms ease;
+}
+
+.progress-meta {
+  font-size: 0.9rem;
 }
 
 input,
@@ -149,6 +202,13 @@ button {
   background: rgba(36, 88, 82, 0.08);
   color: var(--secondary);
   min-width: 106px;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 .message {
@@ -290,7 +350,6 @@ tbody tr:hover {
 }
 
 .error-list li {
-  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -318,8 +377,15 @@ tbody tr:hover {
     padding: 24px;
   }
 
-  .form-row {
+  .form-row,
+  .progress-header,
+  .progress-meta {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .progress-percentage {
+    text-align: left;
   }
 
   .chart {

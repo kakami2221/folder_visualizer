@@ -8,16 +8,35 @@
     <div class="hero-copy">
       <h1>Folder Visualizer</h1>
       <p class="hero-text">
-        選択したフォルダを解析し、容量の偏り、拡張子の分布、大きいファイルをダッシュボード表示します。
+        ローカルフォルダをブラウザだけで解析し、ファイル構造や容量の偏りを可視化します。
+        大きいフォルダや拡張子の傾向をすばやく把握できます。
       </p>
     </div>
 
     <form id="analyze-form" class="analyze-form">
-      <label for="folder-input">解析フォルダ</label>
+      <label for="folder-input">解析するフォルダ</label>
       <div class="form-row">
         <input id="folder-input" name="folder_input" type="file" webkitdirectory directory multiple required>
-        <button id="analyze-button" type="submit">選択フォルダを解析</button>
+        <button id="analyze-button" type="submit">フォルダを解析</button>
       </div>
+
+      <div id="progress-panel" class="progress-panel hidden" aria-live="polite" aria-atomic="true">
+        <div class="progress-header">
+          <div>
+            <strong id="progress-title">処理を開始しています...</strong>
+            <p id="progress-description" class="progress-description">選択したフォルダの情報を準備しています。</p>
+          </div>
+          <span id="progress-percentage" class="progress-percentage">0%</span>
+        </div>
+        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progress-title">
+          <span id="progress-fill" class="progress-fill"></span>
+        </div>
+        <div class="progress-meta">
+          <span id="progress-count">0 / 0 files processed</span>
+          <span id="progress-stage">待機中</span>
+        </div>
+      </div>
+
       <div id="form-message" class="message" role="status" aria-live="polite"></div>
     </form>
   </section>
@@ -25,15 +44,15 @@
   <section id="dashboard" class="dashboard hidden">
     <div class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">総容量</span>
+        <span class="summary-label">合計サイズ</span>
         <strong id="summary-size">-</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">総ファイル数</span>
+        <span class="summary-label">合計ファイル数</span>
         <strong id="summary-files">-</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">総フォルダ数</span>
+        <span class="summary-label">合計フォルダ数</span>
         <strong id="summary-dirs">-</strong>
       </article>
       <article class="summary-card">
@@ -59,7 +78,7 @@
       <section class="panel">
         <div class="panel-header">
           <div>
-            <h2>拡張子別の容量</h2>
+            <h2>拡張子ごとの容量</h2>
           </div>
         </div>
         <div id="extension-chart" class="chart chart-compact"></div>
@@ -68,7 +87,7 @@
       <section class="panel">
         <div class="panel-header">
           <div>
-            <h2>大きいフォルダ</h2>
+            <h2>容量の大きいフォルダ</h2>
           </div>
         </div>
         <div class="table-scroll">
@@ -89,7 +108,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <h2>大きいファイル上位</h2>
+          <h2>容量の大きいファイル</h2>
         </div>
       </div>
       <div class="table-scroll">
@@ -149,7 +168,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <h2>ブラウザ側の制約</h2>
+          <h2>ブラウザ上での処理メモ</h2>
         </div>
       </div>
       <ul id="error-list" class="error-list"></ul>
