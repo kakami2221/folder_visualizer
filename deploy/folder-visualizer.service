@@ -1,0 +1,34 @@
+[Unit]
+Description=Folder Visualizer Gunicorn service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+NotifyAccess=all
+User=folderviz
+Group=folderviz
+WorkingDirectory=/opt/folder-visualizer/current
+EnvironmentFile=/etc/folder-visualizer/folder-visualizer.env
+ExecStart=/opt/folder-visualizer/current/.venv/bin/gunicorn --config /opt/folder-visualizer/current/gunicorn.conf.py app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillSignal=SIGQUIT
+TimeoutStopSec=35
+Restart=on-failure
+RestartSec=5
+UMask=0027
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/log/folder-visualizer
+
+[Install]
+WantedBy=multi-user.target

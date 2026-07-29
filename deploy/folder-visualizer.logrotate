@@ -1,0 +1,30 @@
+/var/log/folder-visualizer/*.log {
+    daily
+    rotate 14
+    size 10M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    create 0640 folderviz folderviz
+    su folderviz folderviz
+}
+
+/var/log/nginx/folder-visualizer_access.log /var/log/nginx/folder-visualizer_error.log {
+    daily
+    rotate 14
+    size 20M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0640 www-data adm
+    su root adm
+    sharedscripts
+    postrotate
+        if [ -s /run/nginx.pid ]; then
+            kill -USR1 "$(cat /run/nginx.pid)"
+        fi
+    endscript
+}
