@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}フォルダ構造 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Folder structure</p>
+      <h1>フォルダ構造</h1>
+      <p>階層数や表示対象を絞り、フォルダ容量の分布を確認できます。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel" aria-labelledby="current-directory-heading">
+      <nav id="structure-breadcrumbs" class="breadcrumbs" aria-label="フォルダ階層"></nav>
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Current directory</p>
+          <h2 id="current-directory-heading">
+            <span id="current-directory-name">-</span>
+          </h2>
+        </div>
+        <a id="view-current-directory" class="primary-link" href="{{ url_for('index') }}">
+          このフォルダのファイルを見る
+        </a>
+      </div>
+      <dl class="performance-list">
+        <div>
+          <dt>合計容量</dt>
+          <dd id="current-directory-size">-</dd>
+        </div>
+        <div>
+          <dt>直下ファイル数</dt>
+          <dd id="current-directory-direct-files">-</dd>
+        </div>
+        <div>
+          <dt>子フォルダ数</dt>
+          <dd id="current-directory-child-count">-</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <form id="structure-controls" class="analysis-controls">
+        <label>
+          <span>表示階層数</span>
+          <input id="max-depth" type="number" min="1" max="30" step="1" value="6">
+        </label>
+        <label>
+          <span>最小表示サイズ (MB)</span>
+          <input id="min-display-size" type="number" min="0" step="0.1" value="0" inputmode="decimal">
+        </label>
+        <label>
+          <span>最大ノード数</span>
+          <input id="max-nodes" type="number" min="50" max="10000" step="50" value="1500">
+        </label>
+        <label class="checkbox-label">
+          <input id="structure-include-files" type="checkbox">
+          <span>ファイルを表示</span>
+        </label>
+        <label class="checkbox-label">
+          <input id="structure-aggregate-others" type="checkbox" checked>
+          <span>選外を「その他」に集約</span>
+        </label>
+        <button id="apply-structure-settings" class="primary-button" type="submit">設定を適用</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Interactive chart</p>
+          <h2>容量の分布</h2>
+        </div>
+        <div class="segmented-control" role="group" aria-label="グラフ表示方式">
+          <button id="treemap-button" class="mode-button active" type="button" data-chart-mode="treemap" aria-pressed="true">Treemap</button>
+          <button id="sunburst-button" class="mode-button" type="button" data-chart-mode="sunburst" aria-pressed="false">Sunburst</button>
+        </div>
+      </div>
+      <p id="structure-notice" class="notice hidden" role="status"></p>
+      <div id="structure-chart" class="chart" role="img" aria-label="フォルダ構造グラフ"></div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/structure.js') }}"></script>
+{% endblock %}

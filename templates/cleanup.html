@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}整理候補と容量削減シミュレーター | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Cleanup review</p>
+      <h1>整理候補</h1>
+      <p>確認をおすすめする項目を条件別に整理し、選択した場合の削減容量だけを試算します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden">
+    <h2>解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <p id="cleanup-empty-directory-note" class="notice warning">
+        空フォルダはブラウザの <code>webkitdirectory</code> では取得できないため、整理候補には表示されません。
+        同名ファイル候補は同名・同サイズのメタデータに基づく未確認の候補です。
+        このページの判定は保存済みメタデータと集計だけを使用し、ファイル内容は読みません。
+      </p>
+      <form id="cleanup-controls" class="analysis-controls analysis-controls-wide">
+        <label>
+          <span>古いと判定する期間</span>
+          <select id="cleanup-age-days">
+            <option value="180">6か月</option>
+            <option value="365" selected>1年</option>
+            <option value="1095">3年</option>
+          </select>
+        </label>
+        <label>
+          <span>大容量の基準 (MB)</span>
+          <input id="cleanup-min-size" type="number" min="0" step="1" value="100">
+        </label>
+        <label>
+          <span>深い階層の基準</span>
+          <input id="cleanup-max-depth" type="number" min="1" max="100" step="1" value="10">
+        </label>
+        <label>
+          <span>長いパスの基準</span>
+          <input id="cleanup-max-path" type="number" min="20" max="1000" step="10" value="180">
+        </label>
+        <label>
+          <span>表示カテゴリ</span>
+          <select id="cleanup-category">
+            <option value="">すべて</option>
+            <option value="old-large">古くて大きい</option>
+            <option value="zero-byte">0バイト</option>
+            <option value="temporary">一時ファイル</option>
+            <option value="backup">バックアップ候補</option>
+            <option value="log">ログ</option>
+            <option value="no-extension">拡張子なし</option>
+            <option value="long-path">長いパス</option>
+            <option value="deep">深い階層</option>
+            <option value="same-name">同名ファイル候補</option>
+            <option value="build">ビルド生成物</option>
+            <option value="cache">キャッシュ</option>
+            <option value="very-large">非常に大きい単一ファイル</option>
+            <option value="concentrated-directory">ファイルが集中しているフォルダ</option>
+          </select>
+        </label>
+        <button class="primary-button" type="submit">条件を適用</button>
+      </form>
+    </section>
+    <section class="panel simulator-panel" aria-labelledby="simulator-title">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Capacity simulator</p>
+          <h2 id="simulator-title">容量削減シミュレーター</h2>
+        </div>
+        <button id="clear-cleanup-selection" class="secondary-button" type="button">選択を解除</button>
+      </div>
+      <p class="notice warning">この機能は削減できる容量を計算するだけで、実際のファイル削除は行いません。</p>
+      <div class="summary-grid simulator-summary">
+        <article class="summary-card"><span class="summary-label">選択件数</span><strong id="sim-selected-count">0</strong></article>
+        <article class="summary-card"><span class="summary-label">選択容量</span><strong id="sim-selected-size">0 B</strong></article>
+        <article class="summary-card"><span class="summary-label">現在の容量</span><strong id="sim-current-size">0 B</strong></article>
+        <article class="summary-card"><span class="summary-label">整理後の予想容量</span><strong id="sim-remaining-size">0 B</strong></article>
+        <article class="summary-card"><span class="summary-label">削減率</span><strong id="sim-reduction-rate">0%</strong></article>
+      </div>
+      <div class="breakdown-grid">
+        <div>
+          <h3>候補の内訳</h3>
+          <ul id="sim-category-breakdown" class="metric-list"></ul>
+        </div>
+        <div>
+          <h3>拡張子別</h3>
+          <ul id="sim-extension-breakdown" class="metric-list"></ul>
+        </div>
+        <div>
+          <h3>フォルダ別</h3>
+          <ul id="sim-directory-breakdown" class="metric-list"></ul>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Review candidates</p>
+          <h2>整理を検討できる候補</h2>
+        </div>
+        <div class="inline-actions">
+          <span id="cleanup-stats" class="table-meta" aria-live="polite">準備中</span>
+          <button id="select-visible-cleanup" class="secondary-button" type="button">表示候補を選択</button>
+        </div>
+      </div>
+      <div id="cleanup-list" class="virtual-card-list" aria-label="整理候補一覧">
+        <div id="cleanup-list-viewport" class="virtual-card-viewport" tabindex="0">
+          <div id="cleanup-list-spacer" class="virtual-card-spacer"></div>
+          <div id="cleanup-list-rows" class="virtual-card-rows"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/cleanup.js') }}"></script>
+{% endblock %}

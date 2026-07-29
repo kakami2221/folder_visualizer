@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}解析概要 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Analysis summary</p>
+      <h1>解析概要</h1>
+      <p>選択したフォルダの規模、主な傾向、処理時間をまとめて確認できます。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="analysis-content" class="analysis-content hidden">
+    <div class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">選択フォルダ</span>
+        <strong id="summary-root" class="path-value">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">合計容量</span>
+        <strong id="total-size">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">合計ファイル数</span>
+        <strong id="total-files">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">合計フォルダ数</span>
+        <strong id="total-directories">-</strong>
+      </article>
+      <article class="summary-card summary-card-wide">
+        <span class="summary-label">最大ファイル</span>
+        <strong id="max-file" class="path-value">-</strong>
+      </article>
+      <article class="summary-card summary-card-wide">
+        <span class="summary-label">最大フォルダ</span>
+        <strong id="max-directory" class="path-value">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">最も多い拡張子</span>
+        <strong id="common-extension">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">最も容量を使用する拡張子</span>
+        <strong id="largest-extension">-</strong>
+      </article>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Performance</p>
+          <h2>処理時間</h2>
+        </div>
+      </div>
+      <dl class="performance-list">
+        <div>
+          <dt>解析時間</dt>
+          <dd id="analysis-duration">-</dd>
+        </div>
+        <div>
+          <dt>IndexedDB 保存時間</dt>
+          <dd id="storage-duration">-</dd>
+        </div>
+        <div>
+          <dt>解析日時</dt>
+          <dd id="analyzed-at">-</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/summary.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}.gitignore候補 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Git ignore suggestions</p>
+      <h1>.gitignore候補</h1>
+      <p>再生成できる可能性がある項目や環境依存ファイルを理由付きで提示します。既存ファイルは上書きしません。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('project_analysis') }}" data-analysis-link>プロジェクト判定へ</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden">
+    <h2>解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Suggestions</p>
+          <h2>検出した候補</h2>
+        </div>
+        <label class="compact-label">
+          <span>テンプレート</span>
+          <select id="gitignore-template">
+            <option value="">自動判定のみ</option>
+            <option value="python">Python</option>
+            <option value="node">Node.js</option>
+            <option value="java">Java</option>
+            <option value="rust">Rust</option>
+            <option value="go">Go</option>
+            <option value="general">一般</option>
+          </select>
+        </label>
+      </div>
+      <div id="gitignore-suggestions" class="stack-list"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Existing rules</p>
+          <h2>既存.gitignoreとの照合（任意）</h2>
+        </div>
+      </div>
+      <p class="notice warning">選択して読み込む場合だけ、既存.gitignoreの内容をブラウザ内で確認します。元ファイルは変更しません。</p>
+      <div class="inline-actions">
+        <input id="existing-gitignore" type="file" accept=".gitignore,text/plain">
+        <button id="read-existing-gitignore" class="secondary-button" type="button">既存ルールを読み込む</button>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Preview</p>
+          <h2>プレビュー</h2>
+        </div>
+        <div class="inline-actions">
+          <button id="copy-gitignore" class="secondary-button" type="button">コピー</button>
+          <button id="download-gitignore" class="primary-button" type="button">.gitignoreをダウンロード</button>
+        </div>
+      </div>
+      <textarea id="gitignore-preview" class="output-preview" readonly aria-label=".gitignoreプレビュー"></textarea>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/gitignore.js') }}"></script>
+{% endblock %}

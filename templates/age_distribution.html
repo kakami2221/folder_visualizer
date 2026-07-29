@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}ファイル年齢分布 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">File age distribution</p>
+      <h1>ファイル年齢分布</h1>
+      <p>最終更新日からファイルの経過期間を分類し、件数と使用容量を比較します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Age buckets</p>
+          <h2>更新時期の分布</h2>
+        </div>
+        <div class="segmented-control" role="group" aria-label="グラフの集計基準">
+          <button class="mode-button active" type="button" data-age-mode="count" aria-pressed="true">件数</button>
+          <button class="mode-button" type="button" data-age-mode="size" aria-pressed="false">容量</button>
+        </div>
+      </div>
+      <p class="notice">グラフを選択すると、その期間に該当するファイルをメインページで確認できます。</p>
+      <div id="age-chart" class="chart chart-compact" role="img" aria-label="ファイル年齢分布グラフ"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Details</p>
+          <h2>期間別一覧</h2>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">更新時期</th>
+              <th scope="col">ファイル数</th>
+              <th scope="col">合計容量</th>
+              <th scope="col">容量割合</th>
+              <th scope="col">一覧</th>
+            </tr>
+          </thead>
+          <tbody id="age-buckets-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/age-distribution.js') }}"></script>
+{% endblock %}

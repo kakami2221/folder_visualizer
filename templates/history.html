@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}解析履歴と前回比較 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Analysis history</p>
+      <h1>解析履歴・前回比較</h1>
+      <p>ブラウザ内に保存された解析世代を比較し、容量やファイル構成の変化を確認します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="history-empty" class="panel empty-state hidden">
+    <h2>比較できる履歴がありません。</h2>
+    <p>同じブラウザでフォルダ解析を複数回実行すると、ここで比較できます。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="history-content" class="analysis-content">
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Saved generations</p>
+          <h2>保存済み解析</h2>
+        </div>
+        <div class="inline-actions">
+          <button id="compare-selected-history" class="primary-button" type="button">選択した2件を比較</button>
+          <button id="delete-selected-history" class="secondary-button" type="button">選択履歴を削除</button>
+          <button id="delete-all-history" class="danger-button" type="button">全履歴を削除</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">選択</th>
+              <th scope="col">解析日時</th>
+              <th scope="col">ルート</th>
+              <th scope="col">合計サイズ</th>
+              <th scope="col">ファイル数</th>
+              <th scope="col">フォルダ数</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+    <section id="history-comparison" class="panel hidden">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Difference</p>
+          <h2>比較結果</h2>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <article class="summary-card"><span class="summary-label">容量差</span><strong id="history-size-diff">-</strong></article>
+        <article class="summary-card"><span class="summary-label">ファイル数差</span><strong id="history-file-diff">-</strong></article>
+        <article class="summary-card"><span class="summary-label">フォルダ数差</span><strong id="history-directory-diff">-</strong></article>
+        <article class="summary-card"><span class="summary-label">変更ファイル</span><strong id="history-changed-count">-</strong></article>
+      </div>
+      <div id="history-chart" class="chart chart-compact" role="img" aria-label="履歴比較グラフ"></div>
+      <div class="breakdown-grid">
+        <div><h3>新規ファイル</h3><ul id="history-added" class="metric-list"></ul></div>
+        <div><h3>消えたファイル</h3><ul id="history-removed" class="metric-list"></ul></div>
+        <div><h3>サイズ・日時変更</h3><ul id="history-changed" class="metric-list"></ul></div>
+        <div><h3>増加したフォルダ</h3><ul id="history-directories-increased" class="metric-list"></ul></div>
+        <div><h3>減少したフォルダ</h3><ul id="history-directories-decreased" class="metric-list"></ul></div>
+        <div><h3>拡張子別増減</h3><ul id="history-extension-delta" class="metric-list"></ul></div>
+        <div><h3>カテゴリ別増減</h3><ul id="history-category-delta" class="metric-list"></ul></div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/history.js') }}"></script>
+{% endblock %}

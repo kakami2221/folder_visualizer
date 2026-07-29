@@ -3,11 +3,71 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
     <title>{% block title %}Folder Visualizer{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
+    {% block styles %}{% endblock %}
   </head>
   <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand-link" href="{{ url_for('index') }}" aria-label="Folder Visualizer メインページ">
+          <span class="brand-mark" aria-hidden="true">FV</span>
+          <span>Folder Visualizer</span>
+        </a>
+        <div class="header-actions">
+          <span id="analysis-status-badge" class="status-badge" aria-live="polite">
+            解析結果を確認中
+          </span>
+          <button
+            id="mobile-menu-button"
+            class="mobile-menu-button"
+            type="button"
+            aria-controls="site-navigation"
+            aria-expanded="false"
+            aria-label="メニューを開く"
+          >
+            <span aria-hidden="true">☰</span>
+          </button>
+        </div>
+        <nav id="site-navigation" class="site-nav" aria-label="アプリ内ナビゲーション">
+          <a class="nav-link" href="{{ url_for('index') }}">メイン</a>
+          <div class="nav-group" aria-label="基本分析">
+            <span class="nav-group-label">分析</span>
+            <a class="nav-link is-disabled" href="{{ url_for('summary') }}" data-analysis-link aria-disabled="true" tabindex="-1">概要</a>
+            <a class="nav-link is-disabled" href="{{ url_for('structure') }}" data-analysis-link aria-disabled="true" tabindex="-1">構造</a>
+            <a class="nav-link is-disabled" href="{{ url_for('extensions') }}" data-analysis-link aria-disabled="true" tabindex="-1">拡張子</a>
+            <a class="nav-link is-disabled" href="{{ url_for('age_distribution') }}" data-analysis-link aria-disabled="true" tabindex="-1">年齢</a>
+            <a class="nav-link is-disabled" href="{{ url_for('large_files') }}" data-analysis-link aria-disabled="true" tabindex="-1">大容量ファイル</a>
+            <a class="nav-link is-disabled" href="{{ url_for('large_directories') }}" data-analysis-link aria-disabled="true" tabindex="-1">大容量フォルダ</a>
+          </div>
+          <div class="nav-group" aria-label="整理支援">
+            <span class="nav-group-label">整理</span>
+            <a class="nav-link is-disabled" href="{{ url_for('cleanup') }}" data-analysis-link aria-disabled="true" tabindex="-1">候補</a>
+            <a class="nav-link is-disabled" href="{{ url_for('duplicates') }}" data-analysis-link aria-disabled="true" tabindex="-1">重複</a>
+            <a class="nav-link is-disabled" href="{{ url_for('health_score') }}" data-analysis-link aria-disabled="true" tabindex="-1">健康度</a>
+            <a class="nav-link is-disabled" href="{{ url_for('history') }}" data-analysis-link aria-disabled="true" tabindex="-1">履歴</a>
+          </div>
+          <div class="nav-group" aria-label="開発・出力">
+            <span class="nav-group-label">ツール</span>
+            <a class="nav-link is-disabled" href="{{ url_for('project_analysis') }}" data-analysis-link aria-disabled="true" tabindex="-1">プロジェクト</a>
+            <a class="nav-link is-disabled" href="{{ url_for('gitignore') }}" data-analysis-link aria-disabled="true" tabindex="-1">gitignore</a>
+            <a class="nav-link is-disabled" href="{{ url_for('export_data') }}" data-analysis-link aria-disabled="true" tabindex="-1">出力</a>
+            <a class="nav-link" href="{{ url_for('compare') }}">比較</a>
+          </div>
+          <div class="nav-group nav-group-utility" aria-label="設定と案内">
+            <a class="nav-link" href="{{ url_for('saved_searches') }}">保存検索</a>
+            <a class="nav-link" href="{{ url_for('settings') }}">設定</a>
+            <a class="nav-link" href="{{ url_for('privacy') }}">プライバシー</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <div id="global-error" class="global-error hidden" role="alert" aria-live="assertive"></div>
     {% block body %}{% endblock %}
-    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="{{ asset_url('js/storage.js') }}" defer></script>
+    <script src="{{ asset_url('js/common.js') }}" defer></script>
+    <script type="module" src="{{ asset_url('js/pages/base.js') }}"></script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>

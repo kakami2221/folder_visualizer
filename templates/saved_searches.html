@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}保存済み検索 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Saved searches</p>
+      <h1>保存済み検索</h1>
+      <p>よく使うファイル検索条件をこのブラウザだけに保存し、メインページへ適用します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <p class="panel-kicker">New preset</p>
+        <h2>検索条件を作成</h2>
+      </div>
+    </div>
+    <form id="saved-search-form" class="analysis-controls analysis-controls-wide">
+      <label><span>名前</span><input id="saved-name" type="text" maxlength="80" required placeholder="100MB以上の動画"></label>
+      <label><span>ファイル名</span><input id="saved-file-name" type="text" maxlength="200"></label>
+      <label><span>パス</span><input id="saved-path" type="text" maxlength="500"></label>
+      <label><span>拡張子</span><input id="saved-extension" type="text" maxlength="40" placeholder=".zip"></label>
+      <label>
+        <span>カテゴリ</span>
+        <select id="saved-category">
+          <option value="">すべて</option>
+          <option value="source-code">ソースコード</option>
+          <option value="document">文書</option>
+          <option value="image">画像</option>
+          <option value="video">動画</option>
+          <option value="audio">音声</option>
+          <option value="archive">圧縮ファイル</option>
+          <option value="data">データ</option>
+          <option value="other">その他</option>
+        </select>
+      </label>
+      <label><span>最小サイズ (MB)</span><input id="saved-min-size" type="number" min="0" step="0.1"></label>
+      <label><span>最大サイズ (MB)</span><input id="saved-max-size" type="number" min="0" step="0.1"></label>
+      <label><span>更新日（開始）</span><input id="saved-date-from" type="date"></label>
+      <label><span>更新日（終了）</span><input id="saved-date-to" type="date"></label>
+      <label>
+        <span>並び替え</span>
+        <select id="saved-sort">
+          <option value="size">サイズ</option>
+          <option value="name">ファイル名</option>
+          <option value="lastModified">更新日時</option>
+        </select>
+      </label>
+      <label>
+        <span>順序</span>
+        <select id="saved-direction"><option value="desc">降順</option><option value="asc">昇順</option></select>
+      </label>
+      <label class="checkbox-label"><input id="saved-regex" type="checkbox"><span>正規表現として検索</span></label>
+      <button class="primary-button" type="submit">保存</button>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <p class="panel-kicker">Presets</p>
+        <h2>保存済み条件</h2>
+      </div>
+    </div>
+    <div id="saved-search-list" class="stack-list"></div>
+    <p id="saved-search-empty" class="empty-copy hidden">保存済み検索はありません。</p>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/saved-searches.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}エラーが発生しました | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell">
+  <section class="panel" aria-labelledby="error-title">
+    <p class="panel-kicker">500</p>
+    <h1 id="error-title">ページを表示できませんでした</h1>
+    <p>時間をおいて再度お試しください。内部情報やローカルファイル情報はサーバーへ送信されません。</p>
+    <p><a class="primary-button" href="{{ url_for('index') }}">メインページへ戻る</a></p>
+  </section>
+</main>
+{% endblock %}

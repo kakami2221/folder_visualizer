@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}ページが見つかりません | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell">
+  <section class="panel" aria-labelledby="error-title">
+    <p class="panel-kicker">404</p>
+    <h1 id="error-title">ページが見つかりません</h1>
+    <p>URLを確認するか、メインページへ戻ってください。</p>
+    <p><a class="primary-button" href="{{ url_for('index') }}">メインページへ戻る</a></p>
+  </section>
+</main>
+{% endblock %}

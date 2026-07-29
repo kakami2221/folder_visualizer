@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}プライバシー | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell">
+  <section class="panel" aria-labelledby="privacy-title">
+    <p class="panel-kicker">Privacy</p>
+    <h1 id="privacy-title">プライバシーについて</h1>
+    <div class="privacy-points">
+      <p>通常解析では、ファイルの内容を読み取りません。</p>
+      <p>ファイル名、フォルダ名、ファイルパス、解析結果は、原則としてユーザーのブラウザ内だけで処理されます。</p>
+      <p>これらの情報をEC2サーバへ送信しません。</p>
+      <p>重複ファイルの精密確認、プロジェクト判定の詳細確認、既存.gitignore確認などをユーザーが明示的に実行した場合のみ、対象ファイルの内容をブラウザ内で読み取ります。</p>
+      <p>読み取ったファイル内容をサーバへ送信しません。</p>
+      <p>このアプリからファイルの削除、移動、名前変更、上書きは行いません。</p>
+    </div>
+  </section>
+</main>
+{% endblock %}

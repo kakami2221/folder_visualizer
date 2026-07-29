@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}開発プロジェクト判定 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Project detection</p>
+      <h1>開発プロジェクト判定</h1>
+      <p>ファイル名とフォルダ構成から技術スタックを推定し、信頼度と根拠を表示します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('gitignore') }}" data-analysis-link>.gitignore候補へ</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden">
+    <h2>解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Metadata-only detection</p>
+          <h2>推定結果</h2>
+        </div>
+        <span id="project-count" class="table-meta" aria-live="polite"></span>
+      </div>
+      <div id="project-results" class="card-grid"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Optional manifest inspection</p>
+          <h2>パッケージファイルの詳細確認</h2>
+        </div>
+      </div>
+      <p class="notice warning">この操作を実行した場合だけ、選択したマニフェストの内容をブラウザ内で読み取ります。内容はサーバへ送信されません。</p>
+      <div class="manifest-controls">
+        <label>
+          <span>requirements.txt、package.json等を選択</span>
+          <input id="manifest-input" type="file" multiple accept=".txt,.json,.toml,.xml,.gradle,.mod">
+        </label>
+        <button id="inspect-manifests" class="primary-button" type="button">選択ファイルを詳細確認</button>
+      </div>
+      <div id="manifest-results" class="stack-list"></div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/project-analysis.js') }}"></script>
+{% endblock %}

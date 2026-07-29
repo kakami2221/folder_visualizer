@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}アプリ設定 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Local settings</p>
+      <h1>アプリ設定</h1>
+      <p>履歴件数や表示、計測ログの設定をこのブラウザのIndexedDBに保存します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section class="panel">
+    <form id="settings-form" class="settings-form">
+      <fieldset>
+        <legend>解析履歴</legend>
+        <label><span>保存する履歴数</span><input id="setting-history-limit" type="number" min="1" max="20" value="5"></label>
+        <label class="checkbox-label"><input id="setting-auto-prune" type="checkbox" checked><span>上限を超えた古い履歴を自動削除する</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>既定表示</legend>
+        <label>
+          <span>ファイルテーブルの高さ</span>
+          <select id="setting-table-size"><option value="small">小</option><option value="medium" selected>中</option><option value="large">大</option></select>
+        </label>
+        <label><span>検索デバウンス (ms)</span><input id="setting-debounce" type="number" min="100" max="1000" step="50" value="250"></label>
+      </fieldset>
+      <fieldset>
+        <legend>整理候補の既定値</legend>
+        <label><span>古いと判定する日数</span><input id="setting-old-days" type="number" min="30" max="3650" value="365"></label>
+        <label><span>大容量と判定するMB</span><input id="setting-large-mb" type="number" min="1" max="1000000" value="100"></label>
+        <label><span>深い階層の基準</span><input id="setting-deep-level" type="number" min="2" max="100" value="10"></label>
+        <label><span>長いパスの文字数</span><input id="setting-long-path" type="number" min="20" max="1000" value="180"></label>
+      </fieldset>
+      <fieldset>
+        <legend>開発者向け</legend>
+        <label class="checkbox-label"><input id="setting-performance-log" type="checkbox"><span>Performance APIの計測結果をコンソールへ詳しく表示する</span></label>
+      </fieldset>
+      <div class="inline-actions">
+        <button class="primary-button" type="submit">設定を保存</button>
+        <button id="reset-settings" class="secondary-button" type="button">既定値へ戻す</button>
+        <button id="clear-current-analysis" class="danger-button" type="button">現在の解析結果を削除</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <p class="panel-kicker">Browser storage</p>
+        <h2>保存領域</h2>
+      </div>
+    </div>
+    <dl class="performance-list">
+      <div><dt>推定使用量</dt><dd id="storage-usage">確認中</dd></div>
+      <div><dt>推定上限</dt><dd id="storage-quota">確認中</dd></div>
+      <div><dt>使用率</dt><dd id="storage-ratio">確認中</dd></div>
+    </dl>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/settings.js') }}"></script>
+{% endblock %}

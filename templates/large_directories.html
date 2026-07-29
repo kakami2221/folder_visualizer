@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}大きいフォルダ | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Largest directories</p>
+      <h1>大きいフォルダ</h1>
+      <p>容量、ファイル数、平均ファイルサイズからフォルダを比較します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="analysis-controls">
+        <label>
+          <span>並び替え</span>
+          <select id="large-directories-sort">
+            <option value="size">合計容量</option>
+            <option value="fileCount">ファイル数</option>
+            <option value="averageSize">平均ファイルサイズ</option>
+          </select>
+        </label>
+        <label>
+          <span>表示件数</span>
+          <select id="large-directories-limit">
+            <option value="50">50件</option>
+            <option value="100" selected>100件</option>
+            <option value="250">250件</option>
+            <option value="500">500件</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Directory ranking</p>
+          <h2>フォルダ一覧</h2>
+        </div>
+        <span id="large-directories-stats" class="table-meta" aria-live="polite">-</span>
+      </div>
+      <div class="table-scroll">
+        <table class="fixed-table">
+          <thead>
+            <tr>
+              <th scope="col">フォルダ</th>
+              <th scope="col">合計容量</th>
+              <th scope="col">ファイル数</th>
+              <th scope="col">直下のファイル数</th>
+              <th scope="col">平均ファイルサイズ</th>
+              <th scope="col">一覧</th>
+            </tr>
+          </thead>
+          <tbody id="large-directories-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/large-directories.js') }}"></script>
+{% endblock %}

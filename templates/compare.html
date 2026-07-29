@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}フォルダ比較 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Folder comparison</p>
+      <h1>フォルダ同士の比較</h1>
+      <p>2つのローカルフォルダ、または保存済み解析結果をブラウザ内で比較します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section class="panel">
+    <div class="panel-header panel-header-wrap">
+      <div>
+        <p class="panel-kicker">Comparison source</p>
+        <h2>比較対象</h2>
+      </div>
+      <div class="segmented-control" role="group" aria-label="比較元の種類">
+        <button class="mode-button active" type="button" data-compare-mode="folders" aria-pressed="true">2つのフォルダ</button>
+        <button class="mode-button" type="button" data-compare-mode="history" aria-pressed="false">保存済み解析</button>
+      </div>
+    </div>
+    <form id="folder-compare-form" class="compare-source-grid">
+      <label><span>フォルダA</span><input id="compare-folder-a" type="file" webkitdirectory directory multiple></label>
+      <label><span>フォルダB</span><input id="compare-folder-b" type="file" webkitdirectory directory multiple></label>
+      <button class="primary-button" type="submit">フォルダを比較</button>
+    </form>
+    <form id="history-compare-form" class="compare-source-grid hidden">
+      <label><span>解析A</span><select id="compare-history-a"></select></label>
+      <label><span>解析B</span><select id="compare-history-b"></select></label>
+      <button class="primary-button" type="submit">履歴を比較</button>
+    </form>
+    <div class="inline-actions">
+      <button id="cancel-comparison" class="secondary-button hidden" type="button">比較をキャンセル</button>
+      <span id="compare-progress" class="message" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+  <div id="comparison-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="summary-grid">
+        <article class="summary-card"><span class="summary-label">Aのみ</span><strong id="compare-only-a">0</strong></article>
+        <article class="summary-card"><span class="summary-label">Bのみ</span><strong id="compare-only-b">0</strong></article>
+        <article class="summary-card"><span class="summary-label">両方</span><strong id="compare-both">0</strong></article>
+        <article class="summary-card"><span class="summary-label">内容差の可能性</span><strong id="compare-changed">0</strong></article>
+        <article class="summary-card"><span class="summary-label">ファイル数差 (B−A)</span><strong id="compare-count-delta">0</strong></article>
+        <article class="summary-card"><span class="summary-label">容量差 (B−A)</span><strong id="compare-size-delta">0 B</strong></article>
+      </div>
+      <div id="compare-chart" class="chart chart-compact" role="img" aria-label="フォルダ比較グラフ"></div>
+      <div class="breakdown-grid">
+        <div><h3>フォルダ容量差</h3><ul id="compare-directory-delta" class="metric-list"></ul></div>
+        <div><h3>拡張子容量差</h3><ul id="compare-extension-delta" class="metric-list"></ul></div>
+        <div><h3>カテゴリ容量差</h3><ul id="compare-category-delta" class="metric-list"></ul></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">File differences</p>
+          <h2>比較結果</h2>
+        </div>
+        <div class="inline-actions">
+          <label class="compact-label"><span>状態</span><select id="compare-filter"><option value="">すべて</option><option value="only-a">Aのみ</option><option value="only-b">Bのみ</option><option value="same">同一の可能性</option><option value="changed">差異あり</option></select></label>
+          <button id="export-compare-csv" class="secondary-button" type="button">CSV</button>
+          <button id="export-compare-json" class="secondary-button" type="button">JSON</button>
+        </div>
+      </div>
+      <div id="compare-list" class="virtual-card-list" aria-label="比較結果一覧">
+        <div id="compare-list-viewport" class="virtual-card-viewport" tabindex="0">
+          <div id="compare-list-spacer" class="virtual-card-spacer"></div>
+          <div id="compare-list-rows" class="virtual-card-rows"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/compare.js') }}"></script>
+{% endblock %}

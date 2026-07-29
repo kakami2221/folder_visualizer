@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}重複候補 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Duplicate candidates</p>
+      <h1>重複候補</h1>
+      <p>まずメタデータで候補を抽出し、必要なグループだけ内容のSHA-256をブラウザ内で確認できます。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden">
+    <h2>解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <form id="duplicate-controls" class="analysis-controls">
+        <label>
+          <span>候補の判定方法</span>
+          <select id="duplicate-mode">
+            <option value="size">同一サイズ</option>
+            <option value="name-size" selected>同一名＋同一サイズ</option>
+            <option value="name-size-date">同一名＋サイズ＋更新日時</option>
+          </select>
+        </label>
+        <label>
+          <span>最小サイズ (KB)</span>
+          <input id="duplicate-min-size" type="number" min="0" step="1" value="1">
+        </label>
+        <button class="primary-button" type="submit">候補を抽出</button>
+      </form>
+    </section>
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Fast metadata scan</p>
+          <h2>高速候補抽出</h2>
+        </div>
+        <span id="duplicate-stats" class="table-meta" aria-live="polite">準備中</span>
+      </div>
+      <div id="duplicate-groups" class="stack-list"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Optional exact verification</p>
+          <h2>SHA-256による精密確認</h2>
+        </div>
+      </div>
+      <p class="notice warning">
+        精密確認では、候補ファイルの内容をブラウザ内で読み取ってハッシュを計算します。
+        ファイル内容はサーバへ送信されません。
+      </p>
+      <p class="panel-description">ページ移動後は元のFile参照を復元できないため、確認対象を含むフォルダをもう一度選択してください。ファイルは1件ずつ分割して読み取ります。</p>
+      <div class="hash-controls">
+        <label>
+          <span>確認対象フォルダ</span>
+          <input id="hash-file-input" type="file" webkitdirectory directory multiple>
+        </label>
+        <div class="inline-actions">
+          <button id="hash-start" class="primary-button" type="button">選択した候補を精密確認</button>
+          <button id="hash-cancel" class="secondary-button hidden" type="button">キャンセル</button>
+        </div>
+      </div>
+      <div id="hash-progress" class="message" role="status" aria-live="polite"></div>
+      <div id="hash-results" class="stack-list"></div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/duplicates.js') }}"></script>
+{% endblock %}

@@ -4,20 +4,24 @@
 
 {% block body %}
 <main class="page-shell">
-  <section class="hero">
-    <div class="hero-copy">
-      <h1>Folder Visualizer</h1>
-      <p class="hero-text">
-        ローカルフォルダをブラウザだけで解析し、ファイル構造や容量の偏りを可視化します。
-        大きいフォルダや拡張子の傾向をすばやく把握できます。
-      </p>
-    </div>
-
-    <form id="analyze-form" class="analyze-form">
+  <section
+    id="pre-analysis-view"
+    class="analysis-entry"
+    aria-labelledby="analysis-entry-title"
+  >
+    <div class="analysis-entry-card">
+      <div class="analysis-entry-heading">
+        <p class="eyebrow">Local folder analysis</p>
+        <h1 id="analysis-entry-title">フォルダを選択</h1>
+        <p>解析するフォルダを選び、開始ボタンを押してください。</p>
+      </div>
+      <form id="analyze-form" class="analyze-form">
       <label for="folder-input">解析するフォルダ</label>
-      <div class="form-row">
-        <input id="folder-input" name="folder_input" type="file" webkitdirectory directory multiple required>
-        <button id="analyze-button" type="submit">フォルダを解析</button>
+      <p class="form-hint">ファイル内容や解析結果がサーバーへ送信されることはありません。</p>
+      <input id="folder-input" type="file" webkitdirectory directory multiple required>
+      <div class="form-actions">
+        <button id="analyze-button" class="primary-button" type="submit" disabled>準備中...</button>
+        <button id="cancel-button" class="secondary-button hidden" type="button">解析をキャンセル</button>
       </div>
 
       <div id="progress-panel" class="progress-panel hidden" aria-live="polite" aria-atomic="true">
@@ -28,151 +32,430 @@
           </div>
           <span id="progress-percentage" class="progress-percentage">0%</span>
         </div>
-        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progress-title">
+        <div
+          id="progress-bar"
+          class="progress-bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-labelledby="progress-title"
+        >
           <span id="progress-fill" class="progress-fill"></span>
         </div>
-        <div class="progress-meta">
-          <span id="progress-count">0 / 0 files processed</span>
+      <div class="progress-meta">
+          <span id="progress-count">0 / 0 ファイル</span>
           <span id="progress-stage">待機中</span>
+          <span id="progress-elapsed">経過 0秒</span>
         </div>
       </div>
 
       <div id="form-message" class="message" role="status" aria-live="polite"></div>
-    </form>
+      <div id="saved-analysis-actions" class="form-actions saved-analysis-actions hidden">
+        <button id="reuse-analysis-button" class="secondary-button" type="button" disabled>解析結果に戻る</button>
+        <button id="delete-analysis-button" class="danger-button" type="button" disabled>解析結果を削除</button>
+      </div>
+      </form>
+      <p class="analysis-entry-privacy">
+        名前・相対パス・サイズ・更新日時だけをブラウザ内で処理します。
+      </p>
+    </div>
   </section>
 
-  <section id="dashboard" class="dashboard hidden">
-    <div class="summary-grid">
-      <article class="summary-card">
-        <span class="summary-label">合計サイズ</span>
-        <strong id="summary-size">-</strong>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">合計ファイル数</span>
-        <strong id="summary-files">-</strong>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">合計フォルダ数</span>
-        <strong id="summary-dirs">-</strong>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">選択フォルダ</span>
-        <strong id="summary-root" class="path-value">-</strong>
-      </article>
-    </div>
-
-    <section class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>フォルダ構造</h2>
-        </div>
-        <div class="segmented-control" role="group" aria-label="Chart mode">
-          <button type="button" class="mode-button active" data-chart-mode="treemap">Treemap</button>
-          <button type="button" class="mode-button" data-chart-mode="sunburst">Sunburst</button>
-        </div>
+  <div
+    id="post-analysis-view"
+    class="analysis-dashboard hidden"
+    data-plotly-url="{{ asset_url('vendor/plotly.min.js') }}"
+  >
+    <section class="analysis-dashboard-header" aria-labelledby="analysis-dashboard-title">
+      <div>
+        <p class="eyebrow">Analysis workspace</p>
+        <h1 id="analysis-dashboard-title">解析結果</h1>
       </div>
-      <div id="tree-chart" class="chart"></div>
+      <div class="dashboard-header-actions">
+        <button id="open-analyzer-button" class="secondary-button" type="button">
+          別のフォルダを解析
+        </button>
+        <button id="dashboard-delete-analysis-button" class="danger-button" type="button">
+          解析結果を削除
+        </button>
+      </div>
     </section>
 
-    <div class="dashboard-grid">
-      <section class="panel">
-        <div class="panel-header">
+    <section class="main-view-navigation" aria-labelledby="main-view-navigation-title">
+    <div>
+      <p class="panel-kicker">Workspace</p>
+      <h2 id="main-view-navigation-title">表示を切り替える</h2>
+    </div>
+    <div
+      class="main-view-switcher"
+      role="tablist"
+      aria-label="メイン画面の表示"
+      aria-orientation="horizontal"
+    >
+      <button
+        id="overview-view-button"
+        class="main-view-button active"
+        type="button"
+        role="tab"
+        aria-selected="true"
+        aria-controls="overview-panel"
+        data-main-view="overview"
+      >
+        概要
+      </button>
+      <button
+        id="files-view-button"
+        class="main-view-button"
+        type="button"
+        role="tab"
+        aria-selected="false"
+        aria-controls="file-panel"
+        data-main-view="files"
+        data-requires-analysis
+        tabindex="-1"
+        disabled
+      >
+        ファイル一覧
+      </button>
+      <button
+        id="analysis-view-button"
+        class="main-view-button"
+        type="button"
+        role="tab"
+        aria-selected="false"
+        aria-controls="analysis-actions"
+        data-main-view="analysis"
+        tabindex="-1"
+      >
+        分析メニュー
+      </button>
+    </div>
+    </section>
+
+    <section
+    id="overview-panel"
+    class="panel main-overview-panel"
+    role="tabpanel"
+    aria-labelledby="overview-view-button"
+    data-main-panel="overview"
+    tabindex="0"
+  >
+    <div class="main-overview-grid">
+      <article class="overview-summary-card" aria-labelledby="overview-summary-title">
+        <div class="overview-card-header">
           <div>
-            <h2>拡張子ごとの容量</h2>
+            <p class="panel-kicker">Overview</p>
+            <h2 id="overview-summary-title">概要</h2>
+          </div>
+          <span id="overview-status" class="overview-status" role="status" aria-live="polite">
+            解析結果なし
+          </span>
+        </div>
+        <dl class="overview-facts">
+          <div>
+            <dt>選択フォルダ</dt>
+            <dd id="overview-folder">-</dd>
+          </div>
+          <div>
+            <dt>合計容量</dt>
+            <dd id="overview-total-size">-</dd>
+          </div>
+          <div>
+            <dt>合計ファイル数</dt>
+            <dd id="overview-total-files">-</dd>
+          </div>
+        </dl>
+        <p id="overview-note" class="overview-note">
+          フォルダを解析すると、ここに合計情報を表示します。
+        </p>
+      </article>
+
+      <article class="capacity-distribution-card interactive-chart-card" aria-labelledby="main-chart-title">
+        <div class="overview-card-header">
+          <div>
+            <p class="panel-kicker">Interactive chart</p>
+            <h2 id="main-chart-title">容量の分布</h2>
+          </div>
+          <div class="chart-metric-switcher" role="group" aria-label="チャートの集計基準">
+            <button
+              class="chart-metric-button active"
+              type="button"
+              data-chart-metric="size"
+              aria-pressed="true"
+            >
+              容量
+            </button>
+            <button
+              class="chart-metric-button"
+              type="button"
+              data-chart-metric="count"
+              aria-pressed="false"
+            >
+              ファイル数
+            </button>
           </div>
         </div>
-        <div id="extension-chart" class="chart chart-compact"></div>
-      </section>
+        <p id="main-chart-description" class="capacity-distribution-description">
+          ファイル種類ごとの使用容量です。項目を選ぶと該当ファイルを表示できます。
+        </p>
+        <div
+          id="main-chart-shell"
+          class="main-chart-shell"
+          aria-describedby="main-chart-description"
+        >
+          <div
+            id="main-category-chart"
+            class="main-category-chart hidden"
+            role="img"
+            aria-label="ファイル種類別の容量分布"
+          ></div>
+          <p id="main-chart-status" class="main-chart-status" role="status" aria-live="polite">
+            チャートを準備しています。
+          </p>
+        </div>
 
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>容量の大きいフォルダ</h2>
+        <details class="capacity-table-details">
+          <summary>容量の分布を表で確認</summary>
+          <p id="capacity-distribution-description" class="capacity-distribution-description">
+            ファイルの種類ごとに、使用容量と全体に占める割合を表示します。
+          </p>
+          <p
+            id="capacity-distribution-empty"
+            class="empty-copy capacity-distribution-empty"
+            role="status"
+            aria-live="polite"
+          >
+            容量の分布データがありません。
+          </p>
+          <div
+            id="capacity-distribution-table"
+            class="table-scroll capacity-distribution-scroll hidden"
+            tabindex="0"
+            role="region"
+            aria-labelledby="main-chart-title"
+            aria-describedby="capacity-distribution-description"
+          >
+            <table>
+              <caption class="visually-hidden">ファイル種類別の容量分布</caption>
+              <thead>
+                <tr>
+                  <th scope="col">ファイルの種類</th>
+                  <th scope="col">容量</th>
+                  <th scope="col">構成比</th>
+                  <th scope="col">ファイル数</th>
+                </tr>
+              </thead>
+              <tbody id="capacity-distribution-body"></tbody>
+            </table>
           </div>
-        </div>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>フォルダ</th>
-                <th>サイズ</th>
-                <th>ファイル数</th>
-              </tr>
-            </thead>
-            <tbody id="largest-dirs-body"></tbody>
-          </table>
-        </div>
-      </section>
+        </details>
+      </article>
+    </div>
+    </section>
+
+    <section
+    id="analysis-actions"
+    class="panel analysis-actions hidden"
+    role="tabpanel"
+    aria-labelledby="analysis-view-button"
+    data-main-panel="analysis"
+    tabindex="0"
+  >
+    <div class="panel-header panel-header-wrap">
+      <div>
+        <p class="panel-kicker">Analysis pages</p>
+        <h2 id="analysis-actions-title">分析結果を見る</h2>
+      </div>
+      <p class="panel-description">解析が完了すると各ページを開けます。</p>
+    </div>
+    <div class="analysis-action-grid">
+      <a class="analysis-action is-disabled" href="{{ url_for('summary') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>解析概要</strong>
+        <span>合計容量や解析時間を確認</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('structure') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>フォルダ構造</strong>
+        <span>Treemap と Sunburst で表示</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('extensions') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>拡張子分布</strong>
+        <span>容量とファイル数の傾向を比較</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('large_files') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>大きいファイル</strong>
+        <span>容量の大きいファイルを確認</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('large_directories') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>大きいフォルダ</strong>
+        <span>容量やファイル数でフォルダを比較</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('age_distribution') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>ファイル年齢</strong>
+        <span>最終更新日から期間別に分析</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('cleanup') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>整理候補</strong>
+        <span>削除せずに容量削減を試算</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('duplicates') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>重複候補</strong>
+        <span>メタデータ候補と任意の精密確認</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('history') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>解析履歴</strong>
+        <span>保存世代と前回からの変化</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('health_score') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>健康診断</strong>
+        <span>点数と減点の根拠を確認</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('project_analysis') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>プロジェクト判定</strong>
+        <span>技術スタックをメタデータから推定</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('gitignore') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>.gitignore候補</strong>
+        <span>理由付きルールをローカル生成</span>
+      </a>
+      <a class="analysis-action is-disabled" href="{{ url_for('export_data') }}" data-analysis-action aria-disabled="true" tabindex="-1">
+        <strong>エクスポート</strong>
+        <span>CSV・JSON・Markdown等を出力</span>
+      </a>
+    </div>
+    </section>
+
+    <section
+    id="file-panel"
+    class="panel file-panel hidden"
+    role="tabpanel"
+    aria-labelledby="files-view-button"
+    data-main-panel="files"
+    tabindex="0"
+  >
+    <div class="panel-header panel-header-wrap">
+      <div>
+        <p class="panel-kicker">Virtual file table</p>
+        <h2 id="file-panel-title">ファイル一覧</h2>
+      </div>
+      <div class="table-size-controls" role="group" aria-label="テーブルの表示サイズ">
+        <button type="button" class="control-button" data-table-size="small">小</button>
+        <button type="button" class="control-button active" data-table-size="medium" aria-pressed="true">中</button>
+        <button type="button" class="control-button" data-table-size="large">大</button>
+        <button type="button" class="control-button" data-table-size="fullscreen">全画面</button>
+      </div>
     </div>
 
-    <section class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>容量の大きいファイル</h2>
-        </div>
-      </div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>ファイル</th>
-              <th>拡張子</th>
-              <th>サイズ</th>
-              <th>更新日時</th>
-            </tr>
-          </thead>
-          <tbody id="largest-files-body"></tbody>
-        </table>
-      </div>
-    </section>
+    <div class="filters file-filters" aria-label="ファイルの検索と絞り込み">
+      <label class="filter-search">
+        <span>ファイル名検索</span>
+        <input id="file-name-search" type="search" placeholder="example.log" autocomplete="off">
+      </label>
+      <label class="filter-search">
+        <span>パス検索</span>
+        <input id="path-search" type="search" placeholder="project/src" autocomplete="off">
+      </label>
+      <label>
+        <span>拡張子</span>
+        <select id="extension-filter">
+          <option value="">すべて</option>
+        </select>
+      </label>
+      <label>
+        <span>カテゴリ</span>
+        <select id="category-filter">
+          <option value="">すべて</option>
+          <option value="source-code">ソースコード</option>
+          <option value="document">文書</option>
+          <option value="image">画像</option>
+          <option value="video">動画</option>
+          <option value="audio">音声</option>
+          <option value="archive">圧縮ファイル</option>
+          <option value="data">データ</option>
+          <option value="executable">実行ファイル</option>
+          <option value="font">フォント</option>
+          <option value="temporary">一時ファイル</option>
+          <option value="log">ログ</option>
+          <option value="backup">バックアップ</option>
+          <option value="no-extension">拡張子なし</option>
+          <option value="other">その他</option>
+        </select>
+      </label>
+      <label>
+        <span>最小サイズ (MB)</span>
+        <input id="min-size-filter" type="number" min="0" step="0.1" inputmode="decimal" placeholder="0">
+      </label>
+      <label>
+        <span>最大サイズ (MB)</span>
+        <input id="max-size-filter" type="number" min="0" step="0.1" inputmode="decimal" placeholder="指定なし">
+      </label>
+      <label>
+        <span>並び替え</span>
+        <select id="sort-by">
+          <option value="size">ファイルサイズ</option>
+          <option value="nameLower">ファイル名</option>
+          <option value="lastModified">更新日時</option>
+        </select>
+      </label>
+      <label>
+        <span>更新日（開始）</span>
+        <input id="modified-from-filter" type="date">
+      </label>
+      <label>
+        <span>更新日（終了）</span>
+        <input id="modified-to-filter" type="date">
+      </label>
+      <label>
+        <span>順序</span>
+        <select id="sort-direction">
+          <option value="desc">降順</option>
+          <option value="asc">昇順</option>
+        </select>
+      </label>
+      <label class="checkbox-label">
+        <input id="regex-filter" type="checkbox">
+        <span>正規表現検索</span>
+      </label>
+      <a class="secondary-link saved-search-link" href="{{ url_for('saved_searches') }}">条件を保存・管理</a>
+    </div>
 
-    <section class="panel">
-      <div class="panel-header panel-header-wrap">
-        <div>
-          <h2>ファイル一覧</h2>
-        </div>
-        <div class="filters">
-          <label>
-            <span>拡張子</span>
-            <select id="extension-filter"></select>
-          </label>
-          <label>
-            <span>最小サイズ(MB)</span>
-            <input id="min-size-filter" type="number" min="0" step="1" value="0">
-          </label>
-          <label class="filter-search">
-            <span>ファイル名検索</span>
-            <input id="search-filter" type="search" placeholder="example.log">
-          </label>
-        </div>
-      </div>
-      <div class="table-meta">
-        <span id="filtered-stats">-</span>
-      </div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>ファイル名</th>
-              <th>拡張子</th>
-              <th>サイズ</th>
-              <th>更新日時</th>
-              <th>親フォルダ</th>
-            </tr>
-          </thead>
-          <tbody id="files-body"></tbody>
-        </table>
-      </div>
-    </section>
+    <div class="table-meta">
+      <span id="filtered-stats" aria-live="polite">表示するファイルを準備しています。</span>
+      <span id="table-loading" class="loading-indicator hidden" role="status" aria-live="polite">読み込み中...</span>
+    </div>
 
-    <section class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>ブラウザ上での処理メモ</h2>
+    <div id="virtual-table-wrapper" class="virtual-table-wrapper table-size-medium" tabindex="-1">
+      <div class="fullscreen-toolbar">
+        <strong>ファイル一覧</strong>
+        <button id="table-close" class="secondary-button hidden" type="button" aria-label="全画面表示を閉じる">閉じる</button>
+      </div>
+      <div id="virtual-table-header" class="virtual-table-header" role="row">
+        <div class="virtual-table-cell" role="columnheader">ファイル名</div>
+        <div class="virtual-table-cell" role="columnheader">拡張子</div>
+        <div class="virtual-table-cell numeric-cell" role="columnheader">サイズ</div>
+        <div class="virtual-table-cell" role="columnheader">更新日時</div>
+        <div class="virtual-table-cell" role="columnheader">親フォルダ</div>
+      </div>
+      <div
+        id="virtual-table-viewport"
+        class="virtual-table-viewport"
+        role="rowgroup"
+        tabindex="0"
+        aria-label="仮想スクロール式ファイル一覧"
+        aria-busy="false"
+      >
+        <div id="virtual-table-spacer" class="virtual-table-spacer" aria-hidden="true"></div>
+        <div id="virtual-table-rows" class="virtual-table-rows"></div>
+        <div id="virtual-table-empty" class="virtual-table-empty hidden" role="status">
+          条件に一致するファイルがありません。
         </div>
       </div>
-      <ul id="error-list" class="error-list"></ul>
+    </div>
     </section>
-  </section>
+  </div>
 </main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/index.js') }}"></script>
 {% endblock %}

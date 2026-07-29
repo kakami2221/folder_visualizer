@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      FLASK_ENV: production
+      SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY in a local .env file}"
+      APP_BASE_URL: "${APP_BASE_URL:-https://example.com}"
+      APP_VERSION: "${APP_VERSION:-1.1.0}"
+      LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+      APP_LOG_FILE: /var/log/folder-visualizer/application.log
+      SESSION_COOKIE_SECURE: "true"
+      SESSION_COOKIE_SAMESITE: "${SESSION_COOKIE_SAMESITE:-Lax}"
+      TRUST_PROXY_HEADERS: "true"
+      GUNICORN_BIND: 0.0.0.0:8000
+      GUNICORN_WORKERS: "${GUNICORN_WORKERS:-2}"
+      GUNICORN_THREADS: "${GUNICORN_THREADS:-4}"
+      GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-30}"
+      GUNICORN_GRACEFUL_TIMEOUT: "${GUNICORN_GRACEFUL_TIMEOUT:-30}"
+      GUNICORN_ACCESS_LOG: /var/log/folder-visualizer/gunicorn-access.log
+      GUNICORN_ERROR_LOG: /var/log/folder-visualizer/gunicorn-error.log
+      GUNICORN_MAX_REQUESTS: "${GUNICORN_MAX_REQUESTS:-1000}"
+      GUNICORN_MAX_REQUESTS_JITTER: "${GUNICORN_MAX_REQUESTS_JITTER:-100}"
+      GUNICORN_PRELOAD: "${GUNICORN_PRELOAD:-false}"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - app-logs:/var/log/folder-visualizer
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  app-logs:

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}フォルダ健康診断 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Folder health</p>
+      <h1>フォルダ健康診断</h1>
+      <p>整理候補の量と構造上の傾向から0〜100点を計算し、減点の根拠をすべて表示します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('cleanup') }}" data-analysis-link>整理候補を見る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden">
+    <h2>解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel health-layout">
+      <div>
+        <p class="panel-kicker">Overall score</p>
+        <h2>フォルダ健康度</h2>
+        <div class="score-value"><strong id="health-score-value">-</strong><span>/ 100</span></div>
+        <p id="health-summary" class="panel-description"></p>
+      </div>
+      <div id="health-chart" class="chart chart-score" role="img" aria-label="フォルダ健康度グラフ"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Score reasons</p>
+          <h2>減点の内訳</h2>
+        </div>
+      </div>
+      <div id="health-reasons" class="stack-list"></div>
+      <a class="primary-link" href="{{ url_for('cleanup') }}">整理候補を確認する</a>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/health-score.js') }}"></script>
+{% endblock %}

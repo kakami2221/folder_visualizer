@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}大きいファイル | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Largest files</p>
+      <h1>大きいファイル</h1>
+      <p>容量や更新日時を基準に、確認したいファイルを絞り込みます。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="analysis-controls">
+        <label>
+          <span>表示件数</span>
+          <select id="large-files-limit">
+            <option value="50">50件</option>
+            <option value="100" selected>100件</option>
+            <option value="250">250件</option>
+            <option value="500">500件</option>
+          </select>
+        </label>
+        <label>
+          <span>最小サイズ (MB)</span>
+          <input id="min-file-size" type="number" min="0" step="0.1" value="0" inputmode="decimal">
+        </label>
+        <label>
+          <span>並び替え</span>
+          <select id="large-files-sort">
+            <option value="size">ファイルサイズ</option>
+            <option value="lastModified">更新日時</option>
+          </select>
+        </label>
+        <label>
+          <span>順序</span>
+          <select id="large-files-direction">
+            <option value="desc">降順</option>
+            <option value="asc">昇順</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">File ranking</p>
+          <h2>ファイル一覧</h2>
+        </div>
+        <span id="large-files-stats" class="table-meta" aria-live="polite">-</span>
+      </div>
+      <div class="table-scroll">
+        <table class="fixed-table">
+          <thead>
+            <tr>
+              <th scope="col">ファイル名</th>
+              <th scope="col">パス</th>
+              <th scope="col">拡張子</th>
+              <th scope="col">サイズ</th>
+              <th scope="col">更新日時</th>
+              <th scope="col">一覧</th>
+            </tr>
+          </thead>
+          <tbody id="large-files-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/large-files.js') }}"></script>
+{% endblock %}

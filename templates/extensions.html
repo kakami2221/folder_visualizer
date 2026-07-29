@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}拡張子分布 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Extension distribution</p>
+      <h1>拡張子分布</h1>
+      <p>拡張子ごとの合計容量とファイル数を比較します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+
+  <div id="analysis-content" class="analysis-content hidden">
+    <div class="summary-grid summary-grid-two">
+      <article class="summary-card">
+        <span class="summary-label">拡張子別の合計容量</span>
+        <strong id="extension-size-total">-</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">拡張子別の合計ファイル数</span>
+        <strong id="extension-count-total">-</strong>
+      </article>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header panel-header-wrap">
+        <div>
+          <p class="panel-kicker">Distribution chart</p>
+          <h2>拡張子別グラフ</h2>
+        </div>
+        <div class="segmented-control" role="group" aria-label="拡張子の並び替え基準">
+          <button class="mode-button active" type="button" data-extension-mode="size" aria-pressed="true">容量順</button>
+          <button class="mode-button" type="button" data-extension-mode="count" aria-pressed="false">件数順</button>
+        </div>
+      </div>
+      <div id="extension-chart" class="chart chart-compact" role="img" aria-label="拡張子分布グラフ"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Extension details</p>
+          <h2>拡張子別一覧</h2>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">拡張子</th>
+              <th scope="col">合計容量</th>
+              <th scope="col">ファイル数</th>
+              <th scope="col">平均サイズ</th>
+            </tr>
+          </thead>
+          <tbody id="extensions-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script type="module" src="{{ asset_url('js/pages/extensions.js') }}"></script>
+{% endblock %}

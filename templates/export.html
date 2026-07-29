@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}解析結果の出力 | Folder Visualizer{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page">
+  <section class="page-intro">
+    <div>
+      <p class="eyebrow">Local export</p>
+      <h1>解析結果の出力</h1>
+      <p>すべてブラウザ内で生成し、CSV、JSON、フォルダ構造、HTMLレポートとして保存します。</p>
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="page-message" class="message page-message" role="status" aria-live="polite"></div>
+  <section id="empty-state" class="panel empty-state hidden" aria-labelledby="empty-state-title">
+    <h2 id="empty-state-title">解析結果がありません。</h2>
+    <p id="empty-state-message">メインページでフォルダを選択し、解析を実行してください。</p>
+    <a class="primary-link" href="{{ url_for('index') }}">メインページへ戻る</a>
+  </section>
+  <div id="analysis-content" class="analysis-content hidden">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Data exports</p>
+          <h2>CSV・JSON・レポート</h2>
+        </div>
+      </div>
+      <div class="export-grid">
+        <button type="button" class="export-card" data-export="files-csv"><strong>全ファイルCSV</strong><span>ファイル名・パス・サイズ・更新日</span></button>
+        <button type="button" class="export-card" data-export="filtered-csv"><strong>現在の絞込CSV</strong><span>URLの検索条件を適用</span></button>
+        <button type="button" class="export-card" data-export="extensions-csv"><strong>拡張子集計CSV</strong><span>容量・件数・カテゴリ</span></button>
+        <button type="button" class="export-card" data-export="directories-csv"><strong>フォルダ集計CSV</strong><span>容量・件数・階層</span></button>
+        <button type="button" class="export-card" data-export="age-csv"><strong>年齢分布CSV</strong><span>期間別の容量・件数</span></button>
+        <button type="button" class="export-card" data-export="analysis-json"><strong>解析結果JSON</strong><span>メタデータと集計</span></button>
+        <button type="button" class="export-card" data-export="anonymous-json"><strong>匿名化JSON</strong><span>名前・パスを含まない統計</span></button>
+        <button type="button" class="export-card" data-export="html-report"><strong>HTML解析レポート</strong><span>ローカルで開ける概要</span></button>
+      </div>
+      <div id="export-progress" class="message" role="status" aria-live="polite"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Folder structure</p>
+          <h2>フォルダ構造出力</h2>
+        </div>
+      </div>
+      <form id="structure-export-form" class="analysis-controls analysis-controls-wide">
+        <label>
+          <span>形式</span>
+          <select id="structure-format">
+            <option value="markdown">Markdown</option>
+            <option value="text">プレーンテキスト</option>
+            <option value="json">JSON</option>
+            <option value="mermaid">Mermaid</option>
+          </select>
+        </label>
+        <label><span>最大階層</span><input id="structure-max-depth" type="number" min="1" max="100" value="8"></label>
+        <label><span>最大出力件数</span><input id="structure-max-items" type="number" min="10" max="100000" value="5000"></label>
+        <label><span>除外パターン</span><input id="structure-exclude" type="text" placeholder="node_modules, .git"></label>
+        <label><span>除外拡張子</span><input id="structure-exclude-extensions" type="text" placeholder=".map, .tmp"></label>
+        <label class="checkbox-label"><input id="structure-include-files" type="checkbox" checked><span>ファイルを含める</span></label>
+        <label class="checkbox-label"><input id="structure-include-size" type="checkbox"><span>サイズを含める</span></label>
+        <label class="checkbox-label"><input id="structure-include-date" type="checkbox"><span>更新日時を含める</span></label>
+        <label class="checkbox-label"><input id="structure-include-empty" type="checkbox" checked><span>空フォルダを含める</span></label>
+        <button class="primary-button" type="submit">プレビュー生成</button>
+      </form>
+      <p id="structure-export-warning" class="notice warning hidden"></p>
+      <div class="panel-header panel-header-wrap preview-header">
+        <h3>プレビュー</h3>
+        <div class="inline-actions">
+          <button id="copy-structure-output" class="secondary-button" type="button">コピー</button>
+          <button id="download-structure-output" class="primary-button" type="button">ダウンロード</button>
+        </div>
+      </div>
+      <textarea id="structure-output" class="output-preview output-preview-large" readonly aria-label="フォルダ構造出力プレビュー"></textarea>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ asset_url('js/pages/export.js') }}"></script>
+{% endblock %}
