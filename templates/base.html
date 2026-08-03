@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
     <title>{% block title %}Folder Visualizer{% endblock %}</title>
+    {% block seo_meta %}{% endblock %}
     <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
+    <!-- Google AdSense Auto ads：404・500以外の全ページで読み込む広告コード（開始） -->
     {% block adsense_head %}
     {% if adsense_client_id %}
     <script
@@ -16,6 +18,7 @@
     ></script>
     {% endif %}
     {% endblock %}
+    <!-- Google AdSense Auto ads：広告コード（終了） -->
     {% block styles %}{% endblock %}
   </head>
   <body>

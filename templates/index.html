@@ -1,66 +1,163 @@
 {% extends "base.html" %}
 
-{% block title %}Folder Visualizer{% endblock %}
+{% block title %}フォルダ内容・容量を可視化する無料Webツール | Folder Visualizer{% endblock %}
+
+{% block seo_meta %}
+    <meta
+      name="description"
+      content="フォルダ内容やフォルダ構造をブラウザ上で可視化できる無料Webツールです。容量分布、大容量ファイル、重複候補、古いファイルをインストール不要で分析できます。"
+    >
+    <link rel="canonical" href="https://www.foldervisualizer.com/">
+{% endblock %}
 
 {% block body %}
 <main class="page-shell">
-  <section
-    id="pre-analysis-view"
-    class="analysis-entry"
-    aria-labelledby="analysis-entry-title"
-  >
-    <div class="analysis-entry-card">
-      <div class="analysis-entry-heading">
-        <p class="eyebrow">Local folder analysis</p>
-        <h1 id="analysis-entry-title">フォルダを選択</h1>
-        <p>解析するフォルダを選び、開始ボタンを押してください。</p>
-      </div>
-      <form id="analyze-form" class="analyze-form">
-      <label for="folder-input">解析するフォルダ</label>
-      <p class="form-hint">ファイル内容や解析結果がサーバーへ送信されることはありません。</p>
-      <input id="folder-input" type="file" webkitdirectory directory multiple required>
-      <div class="form-actions">
-        <button id="analyze-button" class="primary-button" type="submit" disabled>準備中...</button>
-        <button id="cancel-button" class="secondary-button hidden" type="button">解析をキャンセル</button>
-      </div>
-
-      <div id="progress-panel" class="progress-panel hidden" aria-live="polite" aria-atomic="true">
-        <div class="progress-header">
-          <div>
-            <strong id="progress-title">処理を開始しています...</strong>
-            <p id="progress-description" class="progress-description">選択したフォルダの情報を準備しています。</p>
+  <div id="pre-analysis-view">
+    <section
+      class="analysis-entry"
+      aria-labelledby="analysis-entry-title"
+    >
+      <div class="analysis-entry-card">
+        <div class="analysis-entry-heading">
+          <p class="eyebrow">Local folder analysis</p>
+          <h1 id="analysis-entry-title">フォルダ内容・容量をブラウザで可視化</h1>
+          <p class="analysis-entry-description">
+            Folder Visualizerは、パソコン内のフォルダ構造や容量をブラウザ上で可視化できる無料のフォルダ分析ツールです。大容量ファイル、古いファイル、重複候補なども確認できます。
+          </p>
+        </div>
+        <form id="analyze-form" class="analyze-form" aria-labelledby="folder-selection-title">
+          <h2 id="folder-selection-title">解析するフォルダを選択</h2>
+          <label for="folder-input">解析するフォルダ</label>
+          <p class="form-hint">ファイル内容や解析結果がサーバーへ送信されることはありません。</p>
+          <input id="folder-input" type="file" webkitdirectory directory multiple required>
+          <div class="form-actions">
+            <button id="analyze-button" class="primary-button" type="submit" disabled>準備中...</button>
+            <button id="cancel-button" class="secondary-button hidden" type="button">解析をキャンセル</button>
           </div>
-          <span id="progress-percentage" class="progress-percentage">0%</span>
-        </div>
-        <div
-          id="progress-bar"
-          class="progress-bar"
-          role="progressbar"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow="0"
-          aria-labelledby="progress-title"
-        >
-          <span id="progress-fill" class="progress-fill"></span>
-        </div>
-      <div class="progress-meta">
-          <span id="progress-count">0 / 0 ファイル</span>
-          <span id="progress-stage">待機中</span>
-          <span id="progress-elapsed">経過 0秒</span>
-        </div>
+
+          <div id="progress-panel" class="progress-panel hidden" aria-live="polite" aria-atomic="true">
+            <div class="progress-header">
+              <div>
+                <strong id="progress-title">処理を開始しています...</strong>
+                <p id="progress-description" class="progress-description">選択したフォルダの情報を準備しています。</p>
+              </div>
+              <span id="progress-percentage" class="progress-percentage">0%</span>
+            </div>
+            <div
+              id="progress-bar"
+              class="progress-bar"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+              aria-labelledby="progress-title"
+            >
+              <span id="progress-fill" class="progress-fill"></span>
+            </div>
+            <div class="progress-meta">
+              <span id="progress-count">0 / 0 ファイル</span>
+              <span id="progress-stage">待機中</span>
+              <span id="progress-elapsed">経過 0秒</span>
+            </div>
+          </div>
+
+          <div id="form-message" class="message" role="status" aria-live="polite"></div>
+          <div id="saved-analysis-actions" class="form-actions saved-analysis-actions hidden">
+            <button id="reuse-analysis-button" class="secondary-button" type="button" disabled>解析結果に戻る</button>
+            <button id="delete-analysis-button" class="danger-button" type="button" disabled>解析結果を削除</button>
+          </div>
+        </form>
+        <p class="analysis-entry-privacy">
+          名前・相対パス・サイズ・更新日時だけをブラウザ内で処理します。
+        </p>
+      </div>
+    </section>
+
+    <div class="home-guide" aria-label="Folder Visualizerの案内">
+      <div class="home-feature-grid">
+        <section class="panel home-feature-section" aria-labelledby="visualize-feature-title">
+          <p class="panel-kicker">Visualize</p>
+          <h2 id="visualize-feature-title">フォルダの中身を見やすく可視化</h2>
+          <p>
+            フォルダを一つずつ開かなくても、内部のファイルと容量の偏りをまとめて把握できます。
+          </p>
+          <ul>
+            <li>フォルダ内にどのようなファイルがあるか一覧で確認できます。</li>
+            <li>フォルダ構造を階層（ツリー）としてたどり、TreemapやSunburstで表示できます。</li>
+            <li>どのフォルダが容量を多く使用しているか比較できます。</li>
+          </ul>
+        </section>
+
+        <section class="panel home-feature-section" aria-labelledby="cleanup-feature-title">
+          <p class="panel-kicker">Discover</p>
+          <h2 id="cleanup-feature-title">大容量ファイルや不要ファイルを発見</h2>
+          <p>
+            サイズや更新日時を手掛かりに、ストレージを整理するときの候補を探せます。
+          </p>
+          <ul>
+            <li>ファイルやフォルダをサイズ順に確認できます。</li>
+            <li>PCの容量を圧迫している大きなファイルを探せます。</li>
+            <li>古いファイルを更新日時から確認できます。</li>
+            <li>重複している可能性のあるファイルを確認できます。</li>
+          </ul>
+        </section>
+
+        <section class="panel home-feature-section" aria-labelledby="browser-feature-title">
+          <p class="panel-kicker">Browser based</p>
+          <h2 id="browser-feature-title">インストール不要でブラウザ内解析</h2>
+          <p>
+            専用ソフトをインストールせず、対応ブラウザからすぐに利用できます。
+          </p>
+          <ul>
+            <li>選択したフォルダの情報はブラウザ内で処理します。</li>
+            <li>ファイル内容や解析結果をFolder Visualizerのアプリケーションサーバーへアップロードしません。</li>
+          </ul>
+        </section>
       </div>
 
-      <div id="form-message" class="message" role="status" aria-live="polite"></div>
-      <div id="saved-analysis-actions" class="form-actions saved-analysis-actions hidden">
-        <button id="reuse-analysis-button" class="secondary-button" type="button" disabled>解析結果に戻る</button>
-        <button id="delete-analysis-button" class="danger-button" type="button" disabled>解析結果を削除</button>
-      </div>
-      </form>
-      <p class="analysis-entry-privacy">
-        名前・相対パス・サイズ・更新日時だけをブラウザ内で処理します。
-      </p>
+      <section class="panel home-section" aria-labelledby="how-to-title">
+        <p class="panel-kicker">How to use</p>
+        <h2 id="how-to-title">使い方</h2>
+        <ol class="home-step-grid">
+          <li>
+            <span class="home-step-number" aria-hidden="true">1</span>
+            <p>解析したいフォルダを選択する</p>
+          </li>
+          <li>
+            <span class="home-step-number" aria-hidden="true">2</span>
+            <p>ブラウザ内でフォルダ情報を解析する</p>
+          </li>
+          <li>
+            <span class="home-step-number" aria-hidden="true">3</span>
+            <p>グラフや一覧から容量、構造、整理候補を確認する</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="panel home-section" aria-labelledby="faq-title">
+        <p class="panel-kicker">FAQ</p>
+        <h2 id="faq-title">よくある質問</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Folder Visualizerは無料で利用できますか？</summary>
+            <p>基本的なフォルダ分析機能は無料で利用できます。</p>
+          </details>
+          <details class="faq-item">
+            <summary>フォルダ内のファイルはサーバーへアップロードされますか？</summary>
+            <p>ファイル内容やフォルダの解析結果は、Folder Visualizerのアプリケーションサーバーへアップロードせず、ブラウザ内で処理します。</p>
+          </details>
+          <details class="faq-item">
+            <summary>ソフトのインストールは必要ですか？</summary>
+            <p>専用ソフトのインストールは必要ありません。対応ブラウザから利用できます。</p>
+          </details>
+          <details class="faq-item">
+            <summary>どのような情報を確認できますか？</summary>
+            <p>フォルダ構造、ファイルやフォルダの容量、大容量ファイル、古いファイル、重複候補、ファイル形式の分布などを確認できます。</p>
+          </details>
+        </div>
+      </section>
     </div>
-  </section>
+  </div>
 
   <div
     id="post-analysis-view"
@@ -70,7 +167,7 @@
     <section class="analysis-dashboard-header" aria-labelledby="analysis-dashboard-title">
       <div>
         <p class="eyebrow">Analysis workspace</p>
-        <h1 id="analysis-dashboard-title">解析結果</h1>
+        <h2 id="analysis-dashboard-title">解析結果</h2>
       </div>
       <div class="dashboard-header-actions">
         <button id="open-analyzer-button" class="secondary-button" type="button">
