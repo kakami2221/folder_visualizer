@@ -457,5 +457,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{{ asset_url('js/pages/index.js') }}"></script>
+<script nonce="{{ csp_nonce }}" type="module" src="{{ asset_url('js/pages/index.js') }}"></script>
 {% endblock %}

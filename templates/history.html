@@ -76,6 +76,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
-<script type="module" src="{{ asset_url('js/pages/history.js') }}"></script>
+<script nonce="{{ csp_nonce }}" src="{{ asset_url('vendor/plotly.min.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" type="module" src="{{ asset_url('js/pages/history.js') }}"></script>
 {% endblock %}

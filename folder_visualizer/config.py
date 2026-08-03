@@ -39,6 +39,13 @@ class BaseConfig:
     SEND_FILE_MAX_AGE_DEFAULT = 0
     VERSIONED_ASSET_MAX_AGE = 31_536_000
     JSON_SORT_KEYS = False
+    # AdSense Auto ads. Keep the publisher ID configurable so staging or
+    # self-hosted deployments can disable the third-party script by setting
+    # ADSENSE_CLIENT_ID to an empty value.
+    ADSENSE_CLIENT_ID = os.getenv(
+        "ADSENSE_CLIENT_ID",
+        "ca-pub-4828937971968269",
+    ).strip()
 
 
 class DevelopmentConfig(BaseConfig):

@@ -9,6 +9,7 @@ services:
       SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY in a local .env file}"
       APP_BASE_URL: "${APP_BASE_URL:-https://example.com}"
       APP_VERSION: "${APP_VERSION:-1.1.0}"
+      ADSENSE_CLIENT_ID: "${ADSENSE_CLIENT_ID:-ca-pub-4828937971968269}"
       LOG_LEVEL: "${LOG_LEVEL:-INFO}"
       APP_LOG_FILE: /var/log/folder-visualizer/application.log
       SESSION_COOKIE_SECURE: "true"

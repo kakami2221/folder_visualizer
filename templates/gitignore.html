@@ -71,5 +71,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{{ asset_url('js/pages/gitignore.js') }}"></script>
+<script nonce="{{ csp_nonce }}" type="module" src="{{ asset_url('js/pages/gitignore.js') }}"></script>
 {% endblock %}

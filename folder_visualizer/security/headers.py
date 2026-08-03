@@ -2,27 +2,46 @@
 
 from __future__ import annotations
 
-from flask import Flask, Response, request
+import secrets
+
+from flask import Flask, Response, g, request
 
 
-CSP_POLICY = "; ".join(
-    (
-        "default-src 'self'",
-        "base-uri 'self'",
-        "connect-src 'none'",
-        "font-src 'self'",
-        "form-action 'none'",
-        "frame-ancestors 'none'",
-        "img-src 'self' data: blob:",
-        "object-src 'none'",
-        "script-src 'self'",
-        "style-src 'self' 'unsafe-inline'",
-        "worker-src 'self' blob:",
+def _build_csp(nonce: str) -> str:
+    """Return an AdSense-compatible policy bound to this response."""
+
+    return "; ".join(
+        (
+            "default-src 'self'",
+            "base-uri 'self'",
+            "connect-src 'self' https:",
+            "font-src 'self' data: https:",
+            "form-action 'none'",
+            "frame-ancestors 'none'",
+            "frame-src https:",
+            "img-src 'self' data: blob: https:",
+            "object-src 'none'",
+            (
+                "script-src 'self' "
+                f"'nonce-{nonce}' 'strict-dynamic' "
+                "'unsafe-inline' 'unsafe-eval' https: http:"
+            ),
+            "script-src-attr 'none'",
+            "style-src 'self' 'unsafe-inline' https:",
+            "worker-src 'self' blob:",
+        )
     )
-)
 
 
 def register_response_policies(app: Flask) -> None:
+    @app.before_request
+    def create_csp_nonce() -> None:
+        g.csp_nonce = secrets.token_urlsafe(24)
+
+    @app.context_processor
+    def inject_csp_nonce() -> dict[str, str]:
+        return {"csp_nonce": str(g.csp_nonce)}
+
     def set_no_cache(response: Response) -> None:
         response.cache_control.clear()
         response.cache_control.no_cache = True
@@ -39,7 +58,10 @@ def register_response_policies(app: Flask) -> None:
 
     @app.after_request
     def apply_response_policies(response: Response) -> Response:
-        response.headers.setdefault("Content-Security-Policy", CSP_POLICY)
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            _build_csp(str(g.csp_nonce)),
+        )
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "no-referrer")

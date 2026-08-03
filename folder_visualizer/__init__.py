@@ -65,6 +65,7 @@ def create_app(config: dict[str, Any] | str | None = None) -> Flask:
         return {
             "app_version": str(app.config["APP_VERSION"]),
             "asset_url": asset_url,
+            "adsense_client_id": str(app.config.get("ADSENSE_CLIENT_ID", "")),
         }
 
     return app
