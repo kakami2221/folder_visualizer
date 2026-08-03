@@ -32,6 +32,10 @@ class FolderVisualizerRoutesTest(unittest.TestCase):
             "/compare": 'id="folder-compare-form"',
             "/settings": 'id="settings-form"',
             "/privacy": 'id="privacy-title"',
+            "/folder-visualization": 'id="folder-visualization-title"',
+            "/folder-size-visualizer": 'id="folder-size-visualizer-title"',
+            "/find-large-files": 'id="find-large-files-title"',
+            "/folder-structure-visualizer": 'id="folder-structure-visualizer-title"',
         }
 
         for path, marker in expected_markers.items():
@@ -106,6 +110,12 @@ class FolderVisualizerRoutesTest(unittest.TestCase):
             "/compare",
             "/settings",
             "/privacy",
+            "/folder-visualization",
+            "/folder-size-visualizer",
+            "/find-large-files",
+            "/folder-structure-visualizer",
+            "/sitemap.xml",
+            "/robots.txt",
             "/health",
             "/assets/<version>/<path:filename>",
             "/plotly.js",

@@ -1,0 +1,11 @@
+{% set active_seo_endpoint = current_seo_endpoint|default("") %}
+<nav class="seo-link-grid" aria-label="フォルダ可視化の関連ガイド">
+  {% for guide in seo_guides %}
+  {% if guide.endpoint != active_seo_endpoint %}
+  <a class="analysis-action" href="{{ url_for(guide.endpoint) }}">
+    <strong>{{ guide.link_label }}</strong>
+    <span>{{ guide.link_description }}</span>
+  </a>
+  {% endif %}
+  {% endfor %}
+</nav>

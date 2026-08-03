@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block seo_meta %}
+    <meta name="description" content="{{ page.description }}">
+    <link rel="canonical" href="{{ page.canonical }}">
+{% endblock %}
+
+{% block body %}
+<main class="page-shell analysis-page seo-page">
+  <nav class="breadcrumbs" aria-label="パンくずリスト">
+    <a href="{{ url_for('index') }}">ホーム</a>
+    <span aria-hidden="true">›</span>
+    <span class="seo-breadcrumb-current" aria-current="page">{{ page.h1 }}</span>
+  </nav>
+
+  <section class="page-intro" aria-labelledby="{{ page.heading_id }}">
+    <div>
+      <p class="eyebrow">Folder analysis guide</p>
+      <h1 id="{{ page.heading_id }}">{{ page.h1 }}</h1>
+      <p>{{ page.intro }}</p>
+    </div>
+    <div class="seo-page-intro-actions">
+      <a class="primary-link" href="{{ url_for('index') }}#folder-analysis">
+        フォルダを選択して無料で可視化する
+      </a>
+      <a class="back-link" href="{{ url_for('index') }}">ホームへ戻る</a>
+    </div>
+  </section>
+
+  <div class="seo-article-content">
+    {% for section in page.sections %}
+    <section class="panel seo-article-section">
+      <p class="panel-kicker">Guide {{ loop.index }}</p>
+      <h2>{{ section.heading }}</h2>
+      {% for paragraph in section.paragraphs %}
+      <p>{{ paragraph }}</p>
+      {% endfor %}
+      {% if section.bullets %}
+      <ul class="seo-point-list">
+        {% for item in section.bullets %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+
+  <section class="panel home-section" aria-labelledby="related-guides-title">
+    <p class="panel-kicker">Related guides</p>
+    <h2 id="related-guides-title">関連するフォルダ分析ガイド</h2>
+    {% include "includes/seo_links.html" %}
+  </section>
+
+  <section class="panel seo-page-bottom-cta" aria-label="フォルダ解析を開始">
+    <div>
+      <h2>フォルダの状態をブラウザで確認</h2>
+      <p>インストールせず、選択したフォルダの情報をブラウザ内で解析できます。</p>
+    </div>
+    <a class="primary-link" href="{{ url_for('index') }}#folder-analysis">
+      フォルダを選択して無料で可視化する
+    </a>
+  </section>
+</main>
+{% endblock %}

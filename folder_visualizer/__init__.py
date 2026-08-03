@@ -12,6 +12,7 @@ from .config import get_config
 from .routes.assets import asset_url, register_asset_routes
 from .routes.health import register_health_routes
 from .routes.pages import register_page_routes
+from .routes.seo import SEO_PAGES, register_seo_routes
 from .security.headers import register_response_policies
 from .utils.logging import configure_app_logging
 
@@ -56,6 +57,7 @@ def create_app(config: dict[str, Any] | str | None = None) -> Flask:
     configure_app_logging(app)
     register_asset_routes(app)
     register_page_routes(app)
+    register_seo_routes(app)
     register_health_routes(app)
     register_response_policies(app)
     register_error_handlers(app)
@@ -66,6 +68,7 @@ def create_app(config: dict[str, Any] | str | None = None) -> Flask:
             "app_version": str(app.config["APP_VERSION"]),
             "asset_url": asset_url,
             "adsense_client_id": str(app.config.get("ADSENSE_CLIENT_ID", "")),
+            "seo_guides": SEO_PAGES,
         }
 
     return app
