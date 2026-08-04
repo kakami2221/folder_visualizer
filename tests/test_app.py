@@ -116,6 +116,7 @@ class FolderVisualizerRoutesTest(unittest.TestCase):
             "/folder-structure-visualizer",
             "/sitemap.xml",
             "/robots.txt",
+            "/ads.txt",
             "/health",
             "/assets/<version>/<path:filename>",
             "/plotly.js",

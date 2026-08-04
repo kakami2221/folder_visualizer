@@ -8,6 +8,9 @@ from flask import Flask, Response, current_app, render_template
 
 
 PUBLIC_SITE_ORIGIN = "https://www.foldervisualizer.com"
+ADS_TXT_ENTRIES = (
+    "google.com, pub-4828937971968269, DIRECT, f08c47fec0942fa0",
+)
 
 SEO_PAGES: tuple[dict[str, Any], ...] = (
     {
@@ -250,6 +253,15 @@ def robots() -> Response:
     )
 
 
+def ads_txt() -> Response:
+    """Declare the advertising systems authorized to sell site inventory."""
+
+    return current_app.response_class(
+        render_template("ads.txt", ads_txt_entries=ADS_TXT_ENTRIES),
+        mimetype="text/plain",
+    )
+
+
 def register_seo_routes(app: Flask) -> None:
     """Register SEO landing pages and read-only discovery endpoints."""
 
@@ -271,5 +283,11 @@ def register_seo_routes(app: Flask) -> None:
         "/robots.txt",
         endpoint="robots",
         view_func=robots,
+        methods=["GET"],
+    )
+    app.add_url_rule(
+        "/ads.txt",
+        endpoint="ads_txt",
+        view_func=ads_txt,
         methods=["GET"],
     )

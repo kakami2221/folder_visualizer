@@ -6,7 +6,11 @@ from html.parser import HTMLParser
 
 from folder_visualizer import create_app
 from folder_visualizer.routes.pages import PAGE_ROUTES
-from folder_visualizer.routes.seo import PUBLIC_SITEMAP_URLS, SEO_PAGES
+from folder_visualizer.routes.seo import (
+    ADS_TXT_ENTRIES,
+    PUBLIC_SITEMAP_URLS,
+    SEO_PAGES,
+)
 
 
 class SeoDocumentParser(HTMLParser):
@@ -100,6 +104,20 @@ class SearchDiscoveryContractTest(unittest.TestCase):
             "Sitemap: https://www.foldervisualizer.com/sitemap.xml",
         )
         self.assertNotIn("Disallow:", response.get_data(as_text=True))
+
+    def test_ads_txt_declares_the_adsense_publisher_at_the_site_root(self) -> None:
+        response = self.client.get("/ads.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "text/plain")
+        self.assertEqual(
+            response.get_data(as_text=True).strip().splitlines(),
+            list(ADS_TXT_ENTRIES),
+        )
+        self.assertEqual(
+            ADS_TXT_ENTRIES,
+            ("google.com, pub-4828937971968269, DIRECT, f08c47fec0942fa0",),
+        )
+        self.assertNotIn("ca-pub-", response.get_data(as_text=True))
 
     def test_every_seo_page_has_unique_metadata_and_one_h1(self) -> None:
         seen_titles: set[str] = set()

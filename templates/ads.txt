@@ -1,0 +1,2 @@
+{% for entry in ads_txt_entries %}{{ entry }}
+{% endfor %}
