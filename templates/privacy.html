@@ -1,31 +1,133 @@
-{% extends "base.html" %}
+{% extends "legal_base.html" %}
 
-{% block title %}プライバシー | Folder Visualizer{% endblock %}
+{% block title %}プライバシーポリシー | Folder Visualizer{% endblock %}
 
 {% block seo_meta %}
-    <meta name="description" content="Folder Visualizerのフォルダ解析、ブラウザ内処理、広告配信に関するプライバシー情報を説明します。">
+    <meta name="description" content="Folder Visualizerにおけるフォルダ情報、Cookie、広告配信、アクセス情報の取扱いについて説明します。">
     <link rel="canonical" href="https://www.foldervisualizer.com/privacy">
 {% endblock %}
 
-{% block body %}
-<main class="page-shell">
-  <section class="panel" aria-labelledby="privacy-title">
-    <p class="panel-kicker">Privacy</p>
-    <h1 id="privacy-title">プライバシーについて</h1>
-    <div class="privacy-points">
-      <p>通常解析では、ファイルの内容を読み取りません。</p>
-      <p>アプリ本体の解析処理は、ファイル名、フォルダ名、相対パス、解析結果をユーザーのブラウザ内で扱い、これらをEC2サーバへアップロードしません。</p>
-      <p>重複ファイルの精密確認、プロジェクト判定の詳細確認、既存.gitignore確認などをユーザーが明示的に実行した場合のみ、対象ファイルの内容をブラウザ内で読み取ります。</p>
-      <p>読み取ったファイル内容をサーバへ送信しません。</p>
-      <p>このアプリからファイルの削除、移動、名前変更、上書きは行いません。</p>
-    </div>
-    <h2>広告配信について</h2>
-    <div class="privacy-points">
-      <p>404・500エラーページを除くページでは、広告配信のためGoogle AdSenseの外部スクリプトを読み込みます。</p>
-      <p>広告配信時には、IPアドレス、ブラウザ・端末情報、閲覧ページ、Cookieや広告識別子、同意状況などがGoogleへ送信または保存される場合があります。</p>
-      <p>広告コードは解析結果を表示するページ上でも動作します。機密性の高い名前を含むフォルダを扱う場合は、この点を考慮して利用してください。</p>
-      <p><a href="https://policies.google.com/technologies/partner-sites?hl=ja" rel="noopener noreferrer">Googleが広告サービスで情報を利用する方法</a>もご確認ください。</p>
-    </div>
-  </section>
-</main>
+{% block legal_content %}
+<header class="legal-header">
+  <p class="panel-kicker">Privacy Policy</p>
+  <h1 id="privacy-title">プライバシーポリシー</h1>
+  <p class="legal-lead">
+    Folder Visualizer（以下「本サービス」）における、フォルダ情報、アクセス情報、
+    Cookieなどの取扱いを説明します。
+  </p>
+</header>
+
+<section aria-labelledby="privacy-local-analysis">
+  <h2 id="privacy-local-analysis">1．フォルダ解析で取り扱う情報</h2>
+  <p>
+    通常のフォルダ解析では、ファイル名、フォルダ名、相対パス、ファイルサイズ、
+    更新日時などの情報を利用者のブラウザ内で処理し、ファイル内容は読み取りません。
+  </p>
+  <p>
+    重複ファイルの精密確認、プロジェクト判定、<code>.gitignore</code>確認など、
+    利用者が明示的に実行した一部機能では、対象ファイルの内容をブラウザ内で読み取る場合があります。
+  </p>
+  <ul>
+    <li>フォルダ情報、ファイル内容、解析結果を本サービスのアプリケーションサーバーへアップロードしません。</li>
+    <li>本サービスからファイルの削除、移動、名前変更、上書きを行いません。</li>
+  </ul>
+</section>
+
+<section aria-labelledby="privacy-server-logs">
+  <h2 id="privacy-server-logs">2．サーバーへ記録される情報</h2>
+  <p>
+    本サービスへのアクセス時には、IPアドレス、アクセス日時、HTTPメソッドとプロトコル、
+    HTTPステータス、応答データ量、応答時間がWebサーバーのアクセスログに記録されます。
+    現在の標準アクセスログには、閲覧URLとクエリ文字列、リファラー、ブラウザ・端末情報
+    （User-Agent）は記録していません。障害発生時には、原因調査に必要な範囲の診断情報が
+    エラーログに記録される場合があります。
+  </p>
+  <p>
+    これらの情報は、サービスの運用、障害調査、不正利用の防止、セキュリティ対策のために利用します。
+  </p>
+</section>
+
+<section aria-labelledby="privacy-adsense">
+  <h2 id="privacy-adsense">3．Google AdSenseについて</h2>
+  <p>
+    本サービスでは、一部のページでGoogle AdSenseを利用する場合があります。
+    Googleなどの第三者配信事業者は、Cookieなどを使用し、本サービスまたはほかのWebサイトへの
+    過去のアクセス情報に基づいて広告を配信する場合があります。
+  </p>
+  <p>
+    広告配信時には、IPアドレス、ブラウザ・端末情報、閲覧ページ、Cookie、広告識別子、
+    広告への反応、同意状況などがGoogleへ送信または保存される場合があります。
+    プライバシーポリシー、利用規約、お問い合わせの各ページでは広告スクリプトを読み込みません。
+  </p>
+  <ul class="legal-link-list">
+    <li>
+      <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">
+        Google広告設定
+      </a>
+      からパーソナライズ広告を無効にできます。
+    </li>
+    <li>
+      <a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener noreferrer">
+        Googleがパートナーサイトやアプリから受け取った情報の利用
+      </a>
+      もご確認ください。
+    </li>
+  </ul>
+</section>
+
+<section aria-labelledby="privacy-cookies">
+  <h2 id="privacy-cookies">4．Cookieと類似技術について</h2>
+  <p>
+    広告配信や設定保存、セキュリティ確保などのため、Cookieや類似技術が使用される場合があります。
+    本サービス本体は、設定や解析結果を利用者のブラウザ内に保存するため、
+    Cookieとは異なるブラウザストレージであるIndexedDBなどを利用します。
+  </p>
+  <p>
+    Cookieはブラウザの設定から無効にできます。ただし、Cookieやブラウザストレージを無効または
+    制限すると、広告や設定保存を含む一部の機能・表示が正常に動作しない場合があります。
+  </p>
+</section>
+
+<section aria-labelledby="privacy-purposes">
+  <h2 id="privacy-purposes">5．取得情報の利用目的</h2>
+  <p>本サービスで取り扱う情報は、次の目的に必要な範囲で利用します。</p>
+  <ul>
+    <li>サービスの提供と維持</li>
+    <li>利用状況の分析</li>
+    <li>機能と操作性の改善</li>
+    <li>障害や不具合の調査</li>
+    <li>不正アクセスや不正利用の防止</li>
+    <li>お問い合わせへの対応</li>
+    <li>広告の表示と効果測定</li>
+  </ul>
+</section>
+
+<section aria-labelledby="privacy-third-parties">
+  <h2 id="privacy-third-parties">6．第三者への提供</h2>
+  <p>
+    法令に基づく場合を除き、取り扱う個人情報を本人の同意なく第三者へ提供しません。
+    ただし、Google AdSenseやメールサービスなどの外部サービスを利用する際には、
+    サービスの提供に必要な情報が各事業者へ送信される場合があります。
+  </p>
+</section>
+
+<section aria-labelledby="privacy-changes">
+  <h2 id="privacy-changes">7．プライバシーポリシーの変更</h2>
+  <p>
+    法令、サービス内容、外部サービスの変更などに応じて、本ポリシーを変更する場合があります。
+    重要な変更は、本サービス上で分かりやすい方法によりお知らせします。
+  </p>
+</section>
+
+<section aria-labelledby="privacy-contact">
+  <h2 id="privacy-contact">8．お問い合わせ</h2>
+  <p>
+    本ポリシーに関するご連絡は、
+    <a href="{{ url_for('contact') }}">お問い合わせページ</a>をご確認ください。
+  </p>
+</section>
+
+{% set effective_date = privacy_effective_date %}
+{% set last_updated_date = privacy_last_updated_date %}
+{% include "includes/legal_dates.html" %}
 {% endblock %}

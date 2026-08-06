@@ -20,7 +20,7 @@ def _same_site() -> str:
 
 
 class BaseConfig:
-    APP_VERSION = os.getenv("APP_VERSION", "1.1.0")
+    APP_VERSION = os.getenv("APP_VERSION", "1.1.1")
     APP_BASE_URL = os.getenv("APP_BASE_URL", "http://127.0.0.1:5000")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     APP_LOG_FILE = os.getenv("APP_LOG_FILE", "")
@@ -45,6 +45,19 @@ class BaseConfig:
     ADSENSE_CLIENT_ID = os.getenv(
         "ADSENSE_CLIENT_ID",
         "ca-pub-4828937971968269",
+    ).strip()
+    # Public legal-page details are intentionally blank by default. Production
+    # deployments must provide the real values instead of publishing examples.
+    CONTACT_EMAIL = os.getenv("CONTACT_EMAIL", "").strip()
+    PRIVACY_EFFECTIVE_DATE = os.getenv("PRIVACY_EFFECTIVE_DATE", "").strip()
+    PRIVACY_LAST_UPDATED_DATE = os.getenv(
+        "PRIVACY_LAST_UPDATED_DATE",
+        "",
+    ).strip()
+    TERMS_EFFECTIVE_DATE = os.getenv("TERMS_EFFECTIVE_DATE", "").strip()
+    TERMS_LAST_UPDATED_DATE = os.getenv(
+        "TERMS_LAST_UPDATED_DATE",
+        "",
     ).strip()
 
 

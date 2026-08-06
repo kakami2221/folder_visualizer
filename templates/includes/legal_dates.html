@@ -1,0 +1,10 @@
+<dl class="legal-date" aria-label="文書の日付">
+  <div>
+    <dt>制定日</dt>
+    <dd>{{ effective_date if effective_date else "未設定" }}</dd>
+  </div>
+  <div>
+    <dt>最終改定日</dt>
+    <dd>{{ last_updated_date if last_updated_date else "未設定" }}</dd>
+  </div>
+</dl>

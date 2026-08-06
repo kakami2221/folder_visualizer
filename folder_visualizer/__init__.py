@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -64,10 +65,26 @@ def create_app(config: dict[str, Any] | str | None = None) -> Flask:
 
     @app.context_processor
     def inject_application_metadata() -> dict[str, object]:
+        def public_config_value(name: str) -> str:
+            value = app.config.get(name, "")
+            return value.strip() if isinstance(value, str) else ""
+
         return {
             "app_version": str(app.config["APP_VERSION"]),
             "asset_url": asset_url,
             "adsense_client_id": str(app.config.get("ADSENSE_CLIENT_ID", "")),
+            "contact_email": public_config_value("CONTACT_EMAIL"),
+            "privacy_effective_date": public_config_value(
+                "PRIVACY_EFFECTIVE_DATE"
+            ),
+            "privacy_last_updated_date": public_config_value(
+                "PRIVACY_LAST_UPDATED_DATE"
+            ),
+            "terms_effective_date": public_config_value("TERMS_EFFECTIVE_DATE"),
+            "terms_last_updated_date": public_config_value(
+                "TERMS_LAST_UPDATED_DATE"
+            ),
+            "current_year": date.today().year,
             "seo_guides": SEO_PAGES,
         }
 

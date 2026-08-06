@@ -85,7 +85,9 @@ EC2 への本番配信手順は [deploy/README-EC2.md](deploy/README-EC2.md) も
 | `/export` | CSV、JSON、匿名 JSON、HTML レポート、フォルダ構造の各形式を生成 |
 | `/compare` | 2つのローカルフォルダ、または2つの解析履歴を比較し、CSV / JSON へ出力 |
 | `/settings` | 履歴、一覧、検索、整理しきい値、性能ログ、保存容量、現在解析の削除 |
-| `/privacy` | 読み取り範囲、保存先、明示的な内容読み取り、制約の説明 |
+| `/privacy` | フォルダ情報、Cookie、広告配信、アクセス情報の取扱い |
+| `/terms` | 利用条件、禁止事項、解析結果、免責事項の説明 |
+| `/contact` | 環境変数で設定したメールアドレスによる問い合わせ案内 |
 
 配信と監視に使う補助エンドポイントは次のとおりです。
 
@@ -563,8 +565,13 @@ ALB と ACM で TLS を終端する構成も可能です。その場合は ALB �
 | `FLASK_DEBUG` | `false` | 開発プロファイルだけで使用。本番は常に無効 |
 | `SECRET_KEY` | 開発時はプロセスごとに自動生成 | セッション署名。本番では長い固定ランダム値が必須 |
 | `APP_BASE_URL` | `http://127.0.0.1:5000` | 外部公開 URL |
-| `APP_VERSION` | `1.1.0` | 画面、`/health`、バージョン付きアセットURLに使うリリースバージョン |
+| `APP_VERSION` | `1.1.1` | 画面、`/health`、バージョン付きアセットURLに使うリリースバージョン |
 | `ADSENSE_CLIENT_ID` | `ca-pub-4828937971968269` | AdSenseパブリッシャーID。空文字にすると広告スクリプトを無効化 |
+| `CONTACT_EMAIL` | 空（本番で要設定） | お問い合わせページに表示する実在のメールアドレス |
+| `PRIVACY_EFFECTIVE_DATE` | 空（本番で要設定） | プライバシーポリシーの制定日 |
+| `PRIVACY_LAST_UPDATED_DATE` | 空（本番で要設定） | プライバシーポリシーの最終改定日 |
+| `TERMS_EFFECTIVE_DATE` | 空（本番で要設定） | 利用規約の制定日 |
+| `TERMS_LAST_UPDATED_DATE` | 空（本番で要設定） | 利用規約の最終改定日 |
 | `LOG_LEVEL` | `INFO` | アプリと Gunicorn のログレベル |
 | `APP_LOG_FILE` | 空 | Flask ログ。未指定時は標準エラー出力 |
 | `SESSION_COOKIE_SECURE` | 開発 `false`、本番 `true` | HTTPS のみで Cookie を送信 |

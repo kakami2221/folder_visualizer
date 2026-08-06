@@ -7,9 +7,9 @@
     <title>{% block title %}Folder Visualizer{% endblock %}</title>
     {% block seo_meta %}{% endblock %}
     <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
-    <!-- Google AdSense Auto ads：404・500以外の全ページで読み込む広告コード（開始） -->
+    <!-- Google AdSense Auto ads：広告表示を許可したページだけで読み込む（開始） -->
     {% block adsense_head %}
-    {% if adsense_client_id %}
+    {% if adsense_client_id and not disable_ads|default(false) %}
     <script
       async
       nonce="{{ csp_nonce }}"
@@ -78,6 +78,16 @@
     </header>
     <div id="global-error" class="global-error hidden" role="alert" aria-live="assertive"></div>
     {% block body %}{% endblock %}
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <nav class="site-footer-nav" aria-label="フッターナビゲーション">
+          <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
+          <a href="{{ url_for('terms') }}">利用規約</a>
+          <a href="{{ url_for('contact') }}">お問い合わせ</a>
+        </nav>
+        <p class="site-footer-copy"><small>&copy; {{ current_year }} Folder Visualizer</small></p>
+      </div>
+    </footer>
     <script nonce="{{ csp_nonce }}" src="{{ asset_url('js/storage.js') }}" defer></script>
     <script nonce="{{ csp_nonce }}" src="{{ asset_url('js/common.js') }}" defer></script>
     <script nonce="{{ csp_nonce }}" type="module" src="{{ asset_url('js/pages/base.js') }}"></script>

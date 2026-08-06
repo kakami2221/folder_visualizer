@@ -1,0 +1,112 @@
+{% extends "legal_base.html" %}
+
+{% block title %}利用規約 | Folder Visualizer{% endblock %}
+
+{% block seo_meta %}
+    <meta name="description" content="Folder Visualizerの利用条件、禁止事項、免責事項について説明します。">
+    <link rel="canonical" href="https://www.foldervisualizer.com/terms">
+{% endblock %}
+
+{% block legal_content %}
+<header class="legal-header">
+  <p class="panel-kicker">Terms of Service</p>
+  <h1 id="terms-title">利用規約</h1>
+  <p class="legal-lead">
+    Folder Visualizer（以下「本サービス」）をご利用になる前に、本規約をご確認ください。
+  </p>
+</header>
+
+<section aria-labelledby="terms-scope">
+  <h2 id="terms-scope">1．適用</h2>
+  <p>本規約は、本サービスの利用に関する条件を定め、すべての利用者に適用されます。</p>
+</section>
+
+<section aria-labelledby="terms-service">
+  <h2 id="terms-service">2．サービスの内容</h2>
+  <p>
+    本サービスは、利用者が選択したローカルフォルダの構造、容量、ファイル情報などを
+    ブラウザ上で分析・可視化するWebサービスです。ブラウザ、端末、OSの仕様や設定によって、
+    利用できる機能や処理性能が異なる場合があります。
+  </p>
+</section>
+
+<section aria-labelledby="terms-conditions">
+  <h2 id="terms-conditions">3．利用条件</h2>
+  <p>
+    利用者は、自らの責任において本サービスを利用し、解析対象の選択や解析結果に基づく判断を行うものとします。
+  </p>
+</section>
+
+<section aria-labelledby="terms-prohibited">
+  <h2 id="terms-prohibited">4．禁止事項</h2>
+  <p>利用者は、本サービスの利用にあたり、次の行為を行ってはなりません。</p>
+  <ul>
+    <li>法令または公序良俗に反する行為</li>
+    <li>本サービスの運営を妨害する行為</li>
+    <li>サーバーへ過度な負荷を与える行為</li>
+    <li>不正アクセス、または脆弱性を悪用する行為</li>
+    <li>ほかの利用者または第三者の権利を侵害する行為</li>
+    <li>本サービスを不正な目的で利用する行為</li>
+  </ul>
+</section>
+
+<section aria-labelledby="terms-results">
+  <h2 id="terms-results">5．解析結果について</h2>
+  <p>
+    本サービスは、解析結果の正確性、完全性、最新性を保証するものではありません。
+    大容量ファイル、重複候補、古いファイル、整理候補などの表示は、整理を検討するための参考情報です。
+  </p>
+  <p>
+    ファイルを削除または整理する最終判断は利用者が行ってください。
+    重要なファイルについては、操作前にバックアップを作成することを推奨します。
+  </p>
+</section>
+
+<section aria-labelledby="terms-file-operations">
+  <h2 id="terms-file-operations">6．ファイル操作について</h2>
+  <p>
+    現在の本サービスは、ファイルの削除、移動、名前変更、上書きを行いません。
+    将来ファイル操作機能を追加する場合は、その時点の仕様に合わせて本規約や案内を更新します。
+  </p>
+</section>
+
+<section aria-labelledby="terms-availability">
+  <h2 id="terms-availability">7．サービスの変更・停止</h2>
+  <p>
+    保守、障害、セキュリティ対応などのため、本サービスの全部または一部を変更・停止する場合があります。
+    可能な範囲で事前にお知らせしますが、緊急時は予告なく停止することがあります。
+  </p>
+</section>
+
+<section aria-labelledby="terms-disclaimer">
+  <h2 id="terms-disclaimer">8．免責事項</h2>
+  <p>
+    本サービスの利用によって生じた損害について、運営者は法令上認められる範囲で責任を負いません。
+    利用者の端末、ブラウザ、ネットワーク環境に起因する問題や、外部広告・外部リンク先の内容についても
+    保証するものではありません。
+  </p>
+  <p>
+    ただし、本項は、適用される法令により免責または制限できない責任まで免責するものではありません。
+  </p>
+</section>
+
+<section aria-labelledby="terms-changes">
+  <h2 id="terms-changes">9．規約の変更</h2>
+  <p>
+    サービス内容や法令の変更などに応じて、本規約を変更する場合があります。
+    重要な変更は、本サービス上で分かりやすい方法によりお知らせします。
+  </p>
+</section>
+
+<section aria-labelledby="terms-contact">
+  <h2 id="terms-contact">10．お問い合わせ</h2>
+  <p>
+    本規約に関するご連絡は、
+    <a href="{{ url_for('contact') }}">お問い合わせページ</a>をご確認ください。
+  </p>
+</section>
+
+{% set effective_date = terms_effective_date %}
+{% set last_updated_date = terms_last_updated_date %}
+{% include "includes/legal_dates.html" %}
+{% endblock %}

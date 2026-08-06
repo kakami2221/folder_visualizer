@@ -1,0 +1,44 @@
+{% extends "legal_base.html" %}
+
+{% block title %}お問い合わせ | Folder Visualizer{% endblock %}
+
+{% block seo_meta %}
+    <meta name="description" content="Folder Visualizerの不具合報告、機能に関する質問、プライバシーに関するお問い合わせ先です。">
+    <link rel="canonical" href="https://www.foldervisualizer.com/contact">
+{% endblock %}
+
+{% block legal_content %}
+<header class="legal-header">
+  <p class="panel-kicker">Contact</p>
+  <h1 id="contact-title">お問い合わせ</h1>
+  <p class="legal-lead">
+    Folder Visualizerに関する不具合の報告、機能についての質問、
+    プライバシーや広告に関するお問い合わせを受け付けています。
+  </p>
+</header>
+
+<section aria-labelledby="contact-by-email">
+  <h2 id="contact-by-email">メールでのお問い合わせ</h2>
+  <p>お問い合わせは、次のメールアドレスへお送りください。</p>
+  {% if contact_email %}
+  <address class="contact-address">
+    <a class="contact-email" href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+  </address>
+  {% else %}
+  <p class="contact-unavailable" role="status">お問い合わせ先は現在準備中です。</p>
+  {% endif %}
+</section>
+
+<aside class="legal-notice" aria-labelledby="contact-caution">
+  <h2 id="contact-caution">送信前のお願い</h2>
+  <p>
+    お問い合わせの際は、個人情報、パスワード、機密性の高いファイル名やフォルダ名を
+    必要以上に記載しないでください。
+  </p>
+</aside>
+
+<nav class="legal-related-links" aria-label="関連する案内">
+  <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
+  <a href="{{ url_for('terms') }}">利用規約</a>
+</nav>
+{% endblock %}

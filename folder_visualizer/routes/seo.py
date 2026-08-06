@@ -218,6 +218,8 @@ PUBLIC_SITEMAP_URLS = (
     f"{PUBLIC_SITE_ORIGIN}/",
     *(str(page["canonical"]) for page in SEO_PAGES),
     f"{PUBLIC_SITE_ORIGIN}/privacy",
+    f"{PUBLIC_SITE_ORIGIN}/terms",
+    f"{PUBLIC_SITE_ORIGIN}/contact",
 )
 
 
